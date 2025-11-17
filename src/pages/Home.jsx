@@ -10,6 +10,7 @@ import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 export default function Home() {
   const [stage, setStage] = useState("submission"); // افتراضي مرحلة التقديم
   const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true); // حالة التحميل
 
   // جلب إعدادات المسابقة
   useEffect(() => {
@@ -43,10 +44,21 @@ export default function Home() {
         setSubmissions(data);
       } catch (error) {
         console.error("Error fetching submissions:", error);
+        setSubmissions([]);
+      } finally {
+        setLoading(false);
       }
     }
     fetchSubmissions();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-black text-white">
+        <p>جاري تحميل البيانات...</p>
+      </div>
+    );
+  }
 
   // مرحلة التقديم
   if (stage === "submission") {
@@ -60,13 +72,21 @@ export default function Home() {
   // مرحلة التصويت
   return (
     <div className="min-h-screen bg-black text-white p-4">
-      <Podium submissions={submissions} />
-      <Carousel submissions={submissions} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
-        {submissions.map(sub => (
-          <VideoCard key={sub.id} submission={sub} />
-        ))}
-      </div>
+      {submissions.length > 0 ? (
+        <>
+          <Podium submissions={submissions} />
+          <Carousel submissions={submissions} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
+            {submissions.map(sub => (
+              <VideoCard key={sub.id} submission={sub} />
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="flex justify-center items-center min-h-screen">
+          <p className="text-white text-lg">لا توجد مشاركات حالياً</p>
+        </div>
+      )}
     </div>
   );
 }
