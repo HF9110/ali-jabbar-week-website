@@ -1,9 +1,12 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar.jsx";
-import Pending from "./Pending.jsx";
-import Approved from "./Approved.jsx";
-import Settings from "./Settings.jsx";
-import { auth } from "../firebase/firebase.js";
+// المسار الصحيح: الخروج من 'pages'
+import Sidebar from "../components/Sidebar";
+// المسار الصحيح: في نفس المجلد
+import Pending from "./Pending";
+import Approved from "./Approved";
+import Settings from "./Settings";
+// المسار الصحيح: الخروج من 'pages'
+import { auth } from "../firebase/firebase";
 import { useEffect } from "react";
 
 export default function AdminDashboard() {

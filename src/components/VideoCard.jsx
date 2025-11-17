@@ -1,5 +1,6 @@
 import { useState } from "react";
-import Modal from "./Modal.jsx";
+// المسار الصحيح: في نفس المجلد
+import Modal from "./Modal";
 
 export default function VideoCard({ submission }) {
   const [open, setOpen] = useState(false);

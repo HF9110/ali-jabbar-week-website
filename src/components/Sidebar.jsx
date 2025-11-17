@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { auth } from "../firebase/firebase.js";
+// المسار الصحيح: الخروج من 'components'
+import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {

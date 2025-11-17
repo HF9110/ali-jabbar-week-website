@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { db } from "../firebase/firebase.js";
+// المسار الصحيح: الخروج من 'pages'
+import { db } from "../firebase/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function Settings() {
