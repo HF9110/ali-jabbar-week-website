@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '../firebase/firebase.js'; // (تصحيح) إضافة .js
+import { db } from '../firebase/firebase.js'; // المسار الصحيح
 
 export default function Header() {
   const [settings, setSettings] = useState({ title: 'مسابقة', logo: '' });

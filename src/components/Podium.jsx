@@ -1,6 +1,6 @@
-import { arabCountries } from "../utils/countries.js"; // (جديد)
+import { arabCountries } from "../utils/countries.js"; // المسار الصحيح
 
-// (جديد) دالة لجلب العلم
+// دالة لجلب العلم
 const getFlag = (countryName) => {
   const country = arabCountries.find(c => c.name === countryName);
   return country ? country.flag : '🌎';
@@ -11,7 +11,7 @@ export default function Podium({ submissions }) {
 
   if (!top3.length) return null;
 
-  // (جديد) تحديد الارتفاعات والتصاميم للمراكز
+  // تحديد الارتفاعات والتصاميم للمراكز
   const podiumStyles = [
     // المركز الأول
     {
@@ -20,8 +20,7 @@ export default function Podium({ submissions }) {
       order: 'order-1',
       text: 'text-6xl',
       name: 'text-2xl font-bold text-yellow-400',
-      // (جديد) إضافة وميض للمركز الأول
-      animation: 'animate-glow'
+      animation: 'animate-glow' // إضافة الوميض
     },
     // المركز الثاني
     {
@@ -41,7 +40,7 @@ export default function Podium({ submissions }) {
     }
   ];
   
-  // (جديد) إعادة ترتيب لضمان العرض الصحيح (2, 1, 3)
+  // إعادة ترتيب لضمان العرض الصحيح (2, 1, 3)
   const podiumOrder = [top3[1], top3[0], top3[2]];
   const styleOrder = [podiumStyles[1], podiumStyles[0], podiumStyles[2]];
 
@@ -49,14 +48,13 @@ export default function Podium({ submissions }) {
     <div className="flex justify-center items-end gap-2 md:gap-4 mb-10 pt-10 w-full max-w-2xl mx-auto">
       
       {podiumOrder.map((sub, idx) => {
-        // (جديد) استخدام (idx + 1) للترتيب الفعلي (2, 1, 3)
         const rank = (idx === 0 ? 2 : (idx === 1 ? 1 : 3));
         const style = styleOrder[idx];
         
-        if (!sub) return <div key={idx} className={`${style.order} w-24 md:w-32`}></div>; // (جديد) حاجز لضمان الترتيب
+        if (!sub) return <div key={idx} className={`${style.order} w-24 md:w-32`}></div>;
         
         return (
-          <div key={sub.id} className={`flex flex-col items-center ${style.order} ${style.animation || ''}`}>
+          <div key={sub.id} className={`flex flex-col items-center ${style.order} ${style.animation || ''} border-4 rounded-t-lg transition-all duration-500`}>
             <p className={`${style.name} mb-1 truncate w-32 text-center`}>{sub.name}</p>
             {sub.country && (
               <p className="text-lg mb-1" title={sub.country}>{getFlag(sub.country)}</p>

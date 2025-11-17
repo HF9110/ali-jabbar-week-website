@@ -1,4 +1,4 @@
-// (تصحيح) استخدام 'export default' لأن 'package.json' هو "type": "module"
+// تم إصلاح مشكلة CommonJS
 export default {
   plugins: {
     tailwindcss: {},

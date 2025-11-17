@@ -6,7 +6,6 @@ import { Plus, Trash2 } from "lucide-react";
 import { arabCountries } from "../utils/countries.js"; // (جديد)
 
 export default function GlassCard({ settings }) {
-  // (تصحيح) إضافة قيم افتراضية كاملة في حال كان settings = null في البداية
   const currentSettings = settings || { enableCountry: true, maxLinks: 1 };
   
   const [name, setName] = useState("");
@@ -43,7 +42,7 @@ export default function GlassCard({ settings }) {
     setSuccess("");
     
     if (!name) return setError("الرجاء إدخال اسم الحساب.");
-    if (currentSettings.enableCountry && !country) return setError("الرجاء اختيار البلد."); 
+    if (currentSettings.enableCountry && country === arabCountries[0].name) return setError("الرجاء اختيار بلدك من القائمة.");
     if (links.some(link => !link)) return setError("الرجاء ملء جميع حقول الروابط.");
     if (!checked) return setError("الرجاء التأكيد أنك لست روبوت.");
 
@@ -51,7 +50,7 @@ export default function GlassCard({ settings }) {
     try {
       await addDoc(collection(db, "submissions"), {
         name,
-        country: currentSettings.enableCountry ? country : "",
+        country: currentSettings.enableCountry && country !== arabCountries[0].name ? country : "",
         links: links.map(link => link.split('?')[0]),
         votes: 0,
         approved: false,
@@ -102,6 +101,7 @@ export default function GlassCard({ settings }) {
               disabled={loading}
             >
               {arabCountries.map(c => (
+                // (تعديل) إضافة الإيموجي في القائمة المنسدلة
                 <option key={c.name} value={c.name} className="text-black">
                   {c.flag} {c.name}
                 </option>
@@ -132,7 +132,7 @@ export default function GlassCard({ settings }) {
               )}
             </div>
           ))}
-          {/* السماح بإضافة حتى 3 روابط (أو حسب الإعدادات) */}
+          {/* (جديد) السماح بإضافة حتى 3 روابط (أو حسب الإعدادات) */}
           {links.length < Math.min(currentSettings.maxLinks || 1, 3) && (
             <button 
               type="button" 

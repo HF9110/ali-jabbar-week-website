@@ -1,5 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-// (تصحيح) استخدام 'export default' لأن 'package.json' هو "type": "module"
 export default {
   content: [
     "./index.html",
@@ -7,15 +6,15 @@ export default {
   ],
   theme: {
     extend: {
-      // (جديد) إضافة الأنميشن للوميض للمراكز الأولى
+      // إضافة أنميشن الوميض
       keyframes: {
         glow: {
           '0%, 100%': { 
-            boxShadow: '0 0 10px #fde047, 0 0 20px #fde047, 0 0 30px #fca120, 0 0 40px #fca120',
+            boxShadow: '0 0 10px #fde047, 0 0 20px #fde047, 0 0 30px #007bff, 0 0 40px #007bff',
             borderColor: '#fde047'
           },
           '50%': { 
-            boxShadow: '0 0 20px #fde047, 0 0 30px #fca120, 0 0 40px #fca120, 0 0 50px #fca120',
+            boxShadow: '0 0 20px #fde047, 0 0 30px #007bff, 0 0 40px #007bff, 0 0 50px #007bff',
             borderColor: '#facc15'
            },
         }
