@@ -1,5 +1,5 @@
 import { useState } from "react";
-// --- المسار الصحيح: (إزالة .js) ---
+// (تصحيح) المسار يجب أن يخرج من 'components' أولاً
 import { db } from "../firebase/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 

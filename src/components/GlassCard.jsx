@@ -1,5 +1,4 @@
 import { useState } from "react";
-// --- المسار الصحيح: مع لاحقة لملف js ---
 import { db } from "../firebase/firebase.js";
 import { collection, addDoc } from "firebase/firestore";
 

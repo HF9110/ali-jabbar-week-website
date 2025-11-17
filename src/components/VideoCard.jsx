@@ -1,11 +1,10 @@
 import { useState } from "react";
-// --- المسار الصحيح: بدون لاحقة للمكونات ---
-import Modal from "./Modal";
+import Modal from "./Modal.jsx";
 
 export default function VideoCard({ submission }) {
   const [open, setOpen] = useState(false);
 
-  if (!submission) return null; // حماية إضافية
+  if (!submission) return null;
 
   return (
     <>

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-// --- (تصحيح) المسار الصحيح هو من نفس المجلد ---
+// المسار الصحيح: في نفس المجلد
 import App from './App';
 import './index.css';
 

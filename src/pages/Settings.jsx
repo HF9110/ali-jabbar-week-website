@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// --- المسار الصحيح: مع لاحقة لملف js ---
 import { db } from "../firebase/firebase.js";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
@@ -12,10 +11,6 @@ export default function Settings() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  // ... باقي الكود ...
-  // (الكود الداخلي للمكون لم يتغير)
-  // ... (Gist: fetches/saves contest settings)
 
   useEffect(() => {
     async function fetchSettings() {

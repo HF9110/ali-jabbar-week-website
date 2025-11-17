@@ -1,6 +1,5 @@
 import { useState } from "react";
-// --- (تصحيح) إزالة اللواحق ---
-import { auth } from "../firebase/firebase";
+import { auth } from "../firebase/firebase.js";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +14,6 @@ export default function AdminLogin() {
       setError("الرجاء إدخال البريد الإلكتروني وكلمة المرور.");
       return;
     }
-
     try {
       setError("");
       await signInWithEmailAndPassword(auth, email, password);
