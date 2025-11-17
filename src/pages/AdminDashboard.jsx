@@ -8,11 +8,15 @@ import { useEffect } from "react";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+
   useEffect(() => {
-    auth.onAuthStateChanged(user=>{
-      if(!user) navigate("/admin");
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (!user) navigate("/admin");
     });
-  }, []);
+
+    // تنظيف الاشتراك عند تفكيك المكون
+    return () => unsubscribe();
+  }, [navigate]);
 
   return (
     <div className="flex min-h-screen bg-black text-white">
