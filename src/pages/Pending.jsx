@@ -1,113 +1,144 @@
 import { useEffect, useState } from "react";
-// المسار الصحيح: الخروج من 'pages'
-import { db } from "../firebase/firebase";
-import { collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase.js"; // (تصحيح) إضافة .js
+import { collection, doc, updateDoc, deleteDoc, onSnapshot } from "firebase/firestore";
+import { Check, Trash2, AlertCircle, Video, Loader2, Edit } from 'lucide-react';
+import { motion } from "framer-motion";
+import { arabCountries } from "../utils/countries.js"; // (جديد)
+import { Link } from 'react-router-dom';
+import ApproveModal from '../components/ApproveModal.jsx'; // (جديد) استيراد النافذة
+
+// (جديد) دالة لجلب العلم
+const getFlag = (countryName) => {
+  const country = arabCountries.find(c => c.name === countryName);
+  return country ? country.flag : '🌎';
+};
 
 export default function Pending() {
   const [subs, setSubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  // (جديد) حالات للنافذة
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSub, setSelectedSub] = useState(null);
 
   useEffect(() => {
-    async function fetchSubs() {
-      try {
-        const snapshot = await getDocs(collection(db, "submissions"));
-        const pending = [];
-        snapshot.forEach(d => {
-          if (!d.data().approved) pending.push({ id: d.id, ...d.data() });
-        });
-        setSubs(pending);
-      } catch (err) {
-        console.error("Error fetching submissions:", err);
-        setError("حدث خطأ أثناء جلب المشاركات.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchSubs();
+    const q = collection(db, "submissions");
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const pending = [];
+      snapshot.forEach(d => {
+        if (!d.data().approved) {
+          pending.push({ id: d.id, ...d.data() });
+        }
+      });
+      setSubs(pending);
+      setLoading(false);
+    }, (err) => {
+      console.error("Error fetching submissions:", err);
+      setError("حدث خطأ أثناء جلب المشاركات.");
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const handleApprove = async (id) => {
-    try {
-      const docRef = doc(db, "submissions", id);
-      await updateDoc(docRef, { approved: true });
-      setSubs(subs.filter(s => s.id !== id));
-    } catch (err) {
-      console.error("Failed to approve:", err);
-      setError("فشل في الموافقة على المشاركة.");
-    }
+  // (جديد) فتح النافذة عند الضغط على "موافقة"
+  const openApproveModal = (submission) => {
+    setSelectedSub(submission);
+    setIsModalOpen(true);
   };
 
   const handleReject = async (id) => {
-    try {
-      await deleteDoc(doc(db, "submissions", id));
-      setSubs(subs.filter(s => s.id !== id));
-    } catch (err) {
-      console.error("Failed to reject:", err);
-      setError("فشل في رفض المشاركة.");
+    if (window.confirm("هل أنت متأكد أنك تريد حذف هذه المشاركة؟")) {
+      try {
+        await deleteDoc(doc(db, "submissions", id));
+      } catch (err) {
+        console.error("Failed to reject:", err);
+        setError("فشل في رفض المشاركة.");
+      }
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex justify-center items-center bg-black text-white">
-        <p>جاري تحميل المشاركات...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex justify-center items-center bg-black text-white">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
-  }
-
-  if (subs.length === 0) {
-    return (
-      <div className="min-h-screen flex justify-center items-center bg-black text-white">
-        <p>لا توجد مشاركات معلقة حالياً.</p>
+      <div className="flex items-center justify-center p-10">
+        <Loader2 className="animate-spin text-blue-600" size={40} />
       </div>
     );
   }
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl mb-4 text-white">المشاركات المعلقة</h2>
-      <table className="w-full table-auto text-white border-collapse">
-        <thead>
-          <tr>
-            <th className="border px-2 py-1">الاسم</th>
-            <th className="border px-2 py-1">البلد</th>
-            <th className="border px-2 py-1">حساب تيك توك</th>
-            <th className="border px-2 py-1">أفعال</th>
-          </tr>
-        </thead>
-        <tbody>
+    <motion.div 
+      className="max-w-4xl mx-auto"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">المشاركات المعلقة</h1>
+
+      {error && (
+        <div className="flex items-center gap-2 text-red-600 bg-red-100 p-4 rounded-lg mb-4">
+          <AlertCircle /> {error}
+        </div>
+      )}
+
+      {subs.length === 0 ? (
+        <div className="text-center bg-white p-10 rounded-lg shadow border border-gray-200">
+          <p className="text-gray-500">لا توجد مشاركات معلقة حالياً.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
           {subs.map(sub => (
-            <tr key={sub.id}>
-              <td className="border px-2 py-1">{sub.name}</td>
-              <td className="border px-2 py-1">{sub.country}</td>
-              <td className="border px-2 py-1">{sub.tiktok}</td>
-              <td className="border px-2 py-1 flex gap-2">
+            <div key={sub.id} className="bg-white p-5 rounded-lg shadow border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900">{sub.name}</h3>
+                {sub.country && (
+                  <p className="text-gray-600 flex items-center gap-2">{getFlag(sub.country)} {sub.country}</p>
+                )}
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {(Array.isArray(sub.links) ? sub.links : [sub.tiktok]).map((link, i) => (
+                    <a 
+                      key={i}
+                      href={link.includes('http') ? link : `https://www.tiktok.com/@${link}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs flex items-center gap-1"
+                    >
+                      <Video size={14} /> رابط {i + 1}
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <div className="flex gap-2 flex-shrink-0">
                 <button
-                  onClick={() => handleApprove(sub.id)}
-                  className="bg-green-600 px-2 rounded hover:bg-green-700"
+                  onClick={() => openApproveModal(sub)} // (جديد)
+                  className="flex items-center gap-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                 >
-                  موافقة
+                  <Check size={18} /> موافقة
                 </button>
+                <Link 
+                  to={`/admin/dashboard/manage/${sub.id}`}
+                  className="flex items-center gap-1 bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
+                >
+                  <Edit size={18} /> تعديل
+                </Link>
                 <button
                   onClick={() => handleReject(sub.id)}
-                  className="bg-red-600 px-2 rounded hover:bg-red-700"
+                  className="flex items-center gap-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
                 >
-                  رفض
+                  <Trash2 size={18} /> رفض
                 </button>
-              </td>
-            </tr>
+              </div>
+            </div>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </div>
+      )}
+
+      {/* (جديد) عرض النافذة عند الطلب */}
+      {isModalOpen && selectedSub && (
+        <ApproveModal 
+          submission={selectedSub}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+    </motion.div>
   );
 }

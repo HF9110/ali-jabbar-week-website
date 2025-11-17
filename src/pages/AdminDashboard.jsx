@@ -1,13 +1,14 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
-// المسار الصحيح: الخروج من 'pages'
-import Sidebar from "../components/Sidebar";
-// المسار الصحيح: في نفس المجلد
-import Pending from "./Pending";
-import Approved from "./Approved";
-import Settings from "./Settings";
-// المسار الصحيح: الخروج من 'pages'
-import { auth } from "../firebase/firebase";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
+// (تصحيح) إضافة اللواحق
+import Sidebar from "../components/Sidebar.jsx";
+import Pending from "./Pending.jsx";
+import Approved from "./Approved.jsx";
+import Settings from "./Settings.jsx";
+import Dashboard from "./Dashboard.jsx"; // (جديد) إضافة صفحة الإحصائيات
+import ManageSubmissions from "./ManageSubmissions.jsx"; // (جديد) إضافة صفحة الإضافة/التعديل
+import { auth } from "../firebase/firebase.js"; // (تصحيح) إضافة .js
 import { useEffect } from "react";
+import { AnimatePresence } from "framer-motion"; // (جديد) للأنميشن
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -20,15 +21,25 @@ export default function AdminDashboard() {
   }, [navigate]);
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
+    // (تصميم جديد) خلفية رمادية فاتحة
+    <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
-      <div className="flex-1 p-6">
-        <Routes>
-          <Route path="pending" element={<Pending />} />
-          <Route path="approved" element={<Approved />} />
-          <Route path="settings" element={<Settings />} />
-        </Routes>
-      </div>
+      <main className="flex-1 p-6 lg:p-10 overflow-auto">
+        {/* (جديد) إضافة أنميشن لتبديل الصفحات */}
+        <AnimatePresence mode="wait">
+          <Routes>
+            {/* (جديد) تحديد صفحة الإحصائيات كصفحة رئيسية */}
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="pending" element={<Pending />} />
+            <Route path="approved" element={<Approved />} />
+            <Route path="settings" element={<Settings />} />
+            {/* (جديد) روت لصفحة الإضافة/التعديل */}
+            <Route path="manage" element={<ManageSubmissions />} />
+            <Route path="manage/:id" element={<ManageSubmissions />} />
+          </Routes>
+        </AnimatePresence>
+      </main>
     </div>
   );
 }

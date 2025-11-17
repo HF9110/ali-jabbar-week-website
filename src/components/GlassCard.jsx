@@ -1,41 +1,170 @@
 import { useState } from "react";
-import { db } from "../firebase/firebase.js";
-import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase.js"; // (تصحيح) إضافة .js
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { motion } from "framer-motion";
+import { Plus, Trash2 } from "lucide-react";
+import { arabCountries } from "../utils/countries.js"; // (جديد)
 
-export default function GlassCard() {
+export default function GlassCard({ settings }) {
   const [name, setName] = useState("");
-  const [country, setCountry] = useState("");
-  const [tiktok, setTiktok] = useState("");
+  const [country, setCountry] = useState(arabCountries[0].name); // (جديد)
+  // (جديد) دعم 3 روابط
+  const [links, setLinks] = useState([""]);
+  const [checked, setChecked] = useState(false);
+  
   const [success, setSuccess] = useState("");
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!name || !country || !tiktok) return;
-    try {
-      await addDoc(collection(db, "submissions"), {
-        name,
-        country,
-        tiktok,
-        votes: 0,
-        approved: false
-      });
-      setSuccess("تم ارسال مشاركتك!");
-      setName(""); setCountry(""); setTiktok("");
-    } catch (err) {
-      console.error(err);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  
+  // (جديد) دوال للتحكم بالروابط
+  const handleLinkChange = (index, value) => {
+    const newLinks = [...links];
+    newLinks[index] = value;
+    setLinks(newLinks);
+  };
+  
+  const addLinkField = () => {
+    // (جديد) القراءة من الإعدادات، بحد أقصى 3
+    const maxLinks = Math.min(settings.maxLinks || 1, 3); 
+    if (links.length < maxLinks) {
+      setLinks([...links, ""]);
     }
   };
 
+  const removeLinkField = (index) => {
+    const newLinks = links.filter((_, i) => i !== index);
+    setLinks(newLinks);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    
+    if (!name) return setError("الرجاء إدخال اسم الحساب.");
+    if (settings.enableCountry && !country) return setError("الرجاء اختيار البلد."); // (جديد)
+    if (links.some(link => !link)) return setError("الرجاء ملء جميع حقول الروابط.");
+    if (!checked) return setError("الرجاء التأكيد أنك لست روبوت.");
+
+    setLoading(true);
+    try {
+      await addDoc(collection(db, "submissions"), {
+        name,
+        country: settings.enableCountry ? country : "", // (جديد)
+        links: links.map(link => link.split('?')[0]), // (جديد) تنظيف الرابط
+        votes: 0,
+        approved: false,
+        createdAt: serverTimestamp()
+      });
+      setSuccess("تم ارسال مشاركتك بنجاح!");
+      setName(""); setCountry(arabCountries[0].name); setLinks([""]); setChecked(false);
+    } catch (err) {
+      console.error(err);
+      setError("حدث خطأ. الرجاء المحاولة مرة أخرى.");
+    }
+    setLoading(false);
+  };
+
   return (
-    <div className="bg-white/10 backdrop-blur-lg p-8 rounded-xl w-96 flex flex-col gap-4">
-      <h2 className="text-xl font-bold text-white mb-2">شارك الآن!</h2>
-      {success && <p className="text-green-400">{success}</p>}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-        <input type="text" placeholder="الاسم" className="p-2 rounded" value={name} onChange={e=>setName(e.target.value)} />
-        <input type="text" placeholder="البلد" className="p-2 rounded" value={country} onChange={e=>setCountry(e.target.value)} />
-        <input type="text" placeholder="حساب تيك توك" className="p-2 rounded" value={tiktok} onChange={e=>setTiktok(e.target.value)} />
-        <button type="submit" className="bg-blue-600 p-2 rounded mt-2 hover:bg-blue-700">إرسال</button>
+    <motion.div 
+      className="glass-card bg-white/5 backdrop-blur-2xl p-8 rounded-2xl w-full max-w-md shadow-2xl border border-white/10"
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-3xl font-bold text-white mb-6 text-center">شارك الآن!</h2>
+      {success && <p className="text-green-300 bg-green-900/50 p-3 rounded-lg mb-4 text-center">{success}</p>}
+      {error && <p className="text-red-300 bg-red-900/50 p-3 rounded-lg mb-4 text-center">{error}</p>}
+      
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* (جديد) حقل الاسم */}
+        <div>
+          <label className="text-sm text-gray-300 mb-1 block">اسم الحساب</label>
+          <input 
+            type="text" 
+            placeholder="اسم حسابك" 
+            className="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white/50" 
+            value={name} 
+            onChange={e=>setName(e.target.value)} 
+            disabled={loading}
+          />
+        </div>
+
+        {/* (جديد) حقل البلدان (اختياري) */}
+        {settings.enableCountry && (
+          <div>
+            <label className="text-sm text-gray-300 mb-1 block">البلد</label>
+            <select
+              className="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+              value={country}
+              onChange={e => setCountry(e.target.value)}
+              disabled={loading}
+            >
+              {arabCountries.map(c => (
+                <option key={c.name} value={c.name} className="text-black">
+                  {c.flag} {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        
+        {/* (جديد) حقول الروابط الديناميكية */}
+        <div>
+          <label className="text-sm text-gray-300 mb-1 block">
+            {links.length > 1 ? "روابط المشاركات" : "رابط المشاركة"} (رابط فيديو تيك توك)
+          </label>
+          {links.map((link, index) => (
+            <div key={index} className="flex items-center gap-2 mb-2">
+              <input 
+                type="url" 
+                placeholder="https://www.tiktok.com/..." 
+                className="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white/50" 
+                value={link} 
+                onChange={e => handleLinkChange(index, e.target.value)} 
+                disabled={loading}
+              />
+              {links.length > 1 && (
+                <button type="button" onClick={() => removeLinkField(index)} className="p-2 text-red-400 hover:text-red-300" disabled={loading}>
+                  <Trash2 size={20} />
+                </button>
+              )}
+            </div>
+          ))}
+          {/* (جديد) السماح بإضافة حتى 3 روابط (أو حسب الإعدادات) */}
+          {links.length < Math.min(settings.maxLinks || 1, 3) && (
+            <button 
+              type="button" 
+              onClick={addLinkField} 
+              className="text-sm text-blue-300 hover:text-blue-200 flex items-center gap-1"
+              disabled={loading}
+            >
+              <Plus size={16} /> إضافة رابط تصميم آخر
+            </button>
+          )}
+        </div>
+
+        {/* (جديد) زر أنا لست روبوت */}
+        <div className="flex items-center mt-4">
+          <input 
+            type="checkbox" 
+            id="robotCheck"
+            checked={checked} 
+            onChange={e=>setChecked(e.target.checked)} 
+            className="mr-2 w-5 h-5"
+            disabled={loading}
+          />
+          <label htmlFor="robotCheck" className="text-white text-sm">أنا لست روبوت</label>
+        </div>
+        
+        <button 
+          type="submit" 
+          className="bg-blue-600 text-white p-3 rounded-lg mt-2 hover:bg-blue-700 transition-colors text-lg font-semibold shadow-lg disabled:bg-gray-500"
+          disabled={loading || !checked}
+        >
+          {loading ? "جاري الإرسال..." : "المشاركة"}
+        </button>
       </form>
-    </div>
+    </motion.div>
   );
 }
