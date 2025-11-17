@@ -1,6 +1,6 @@
 import { useState } from "react";
-// --- المسار الصحيح: مع لاحقة لملف js ---
-import { auth } from "../firebase/firebase.js";
+// --- (تصحيح) إزالة اللواحق ---
+import { auth } from "../firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 

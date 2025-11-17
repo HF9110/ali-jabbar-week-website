@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-// المسار الصحيح: بدون لاحقة
+// --- (تصحيح) المسار الصحيح هو من نفس المجلد ---
 import App from './App';
-// المسار الصحيح: مع لاحقة
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
