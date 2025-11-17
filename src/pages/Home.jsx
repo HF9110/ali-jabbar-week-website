@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
 import GlassCard from "../components/GlassCard";
 import Podium from "../components/Podium";
@@ -7,7 +8,7 @@ import { db } from "../firebase/firebase";
 import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 
 export default function Home() {
-  const [stage, setStage] = useState("submission"); // مرحلة المسابقة
+  const [stage, setStage] = useState("submission"); // افتراضي مرحلة التقديم
   const [submissions, setSubmissions] = useState([]);
 
   // جلب إعدادات المسابقة
@@ -16,15 +17,16 @@ export default function Home() {
       try {
         const docRef = doc(db, "contest_settings", "main");
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
-          setStage(docSnap.data().stage || "submission");
-          console.log("Contest settings:", docSnap.data());
+          const data = docSnap.data();
+          setStage(data.stage || "submission");
         } else {
           console.warn("Document contest_settings/main not found!");
+          setStage("submission");
         }
       } catch (error) {
         console.error("Error fetching settings:", error);
+        setStage("submission");
       }
     }
     fetchSettings();
