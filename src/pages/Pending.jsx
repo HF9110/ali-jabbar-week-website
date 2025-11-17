@@ -1,12 +1,16 @@
-// src/pages/Pending.jsx
 import { useEffect, useState } from "react";
-import { db } from "../firebase/firebase";
+// --- المسار الصحيح: مع لاحقة لملف js ---
+import { db } from "../firebase/firebase.js";
 import { collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 export default function Pending() {
   const [subs, setSubs] = useState([]);
-  const [loading, setLoading] = useState(true); // حالة التحميل
-  const [error, setError] = useState(""); // لتخزين الأخطاء
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // ... باقي الكود ...
+  // (الكود الداخلي للمكون لم يتغير)
+  // ... (Gist: fetches pending submissions, allows approve/reject)
 
   useEffect(() => {
     async function fetchSubs() {

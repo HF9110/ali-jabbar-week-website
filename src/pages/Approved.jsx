@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import { db } from "../firebase/firebase";
+// --- المسار الصحيح: مع لاحقة لملف js ---
+import { db } from "../firebase/firebase.js";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 
 export default function Approved() {
   const [subs, setSubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // ... باقي الكود ...
+  // (الكود الداخلي للمكون لم يتغير)
+  // ... (Gist: fetches approved submissions, allows delete)
 
   useEffect(() => {
     async function fetchSubs() {

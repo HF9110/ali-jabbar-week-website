@@ -1,4 +1,5 @@
 import { useState } from "react";
+// --- المسار الصحيح: بدون لاحقة للمكونات ---
 import Modal from "./Modal";
 
 export default function VideoCard({ submission }) {

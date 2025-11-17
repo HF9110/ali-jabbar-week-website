@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { db } from "../firebase/firebase";
+// --- المسار الصحيح: مع لاحقة لملف js ---
+import { db } from "../firebase/firebase.js";
 import { collection, addDoc } from "firebase/firestore";
 
 export default function GlassCard() {

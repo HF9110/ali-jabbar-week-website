@@ -1,5 +1,7 @@
-import React from 'react'; // <-- هذا هو السطر الذي كان ناقصاً
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// --- المسار الصحيح: بدون لاحقة ---
 import Home from "./pages/Home";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";

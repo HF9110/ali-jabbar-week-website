@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { auth } from "../firebase/firebase";
+// --- المسار الصحيح: مع لاحقة لملف js ---
+import { auth } from "../firebase/firebase.js";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 

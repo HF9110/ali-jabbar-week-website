@@ -1,16 +1,21 @@
-// src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
+// --- المسار الصحيح: بدون لاحقة للمكونات ---
 import GlassCard from "../components/GlassCard";
 import Podium from "../components/Podium";
 import Carousel from "../components/Carousel";
 import VideoCard from "../components/VideoCard";
-import { db } from "../firebase/firebase";
+// --- المسار الصحيح: مع لاحقة لملف js ---
+import { db } from "../firebase/firebase.js";
 import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 
 export default function Home() {
-  const [stage, setStage] = useState("submission"); // افتراضي مرحلة التقديم
+  const [stage, setStage] = useState("submission");
   const [submissions, setSubmissions] = useState([]);
-  const [loading, setLoading] = useState(true); // حالة التحميل
+  const [loading, setLoading] = useState(true);
+
+  // ... باقي الكود ...
+  // (الكود الداخلي للمكون لم يتغير)
+  // ... (Gist: fetches settings and submissions, renders GlassCard or Podium/Carousel/VideoCards based on stage)
 
   // جلب إعدادات المسابقة
   useEffect(() => {

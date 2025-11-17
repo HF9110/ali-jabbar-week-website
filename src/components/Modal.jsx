@@ -1,4 +1,5 @@
 import { useState } from "react";
+// --- المسار الصحيح: (إزالة .js) ---
 import { db } from "../firebase/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 
@@ -23,7 +24,7 @@ export default function Modal({ submission, onClose }) {
           <input type="checkbox" checked={checked} onChange={e=>setChecked(e.target.checked)} className="mr-2"/>
           <span className="text-white text-sm">أنا لست روبوت</span>
         </div>
-        <button onClick={handleVote} className="bg-green-600 p-2 rounded mt-2 w-full hover:bg-green-700" disabled={!checked || voted}>
+        <button onClick={handleVote} className="bg-green-600 p-2 rounded mt-2 w-full hover:bg-blue-700" disabled={!checked || voted}>
           {voted ? "تم التصويت" : "صوت"}
         </button>
       </div>
