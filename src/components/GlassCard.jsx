@@ -6,9 +6,11 @@ import { Plus, Trash2 } from "lucide-react";
 import { arabCountries } from "../utils/countries.js"; // (جديد)
 
 export default function GlassCard({ settings }) {
+  // (تصحيح) إضافة قيم افتراضية كاملة في حال كان settings = null في البداية
+  const currentSettings = settings || { enableCountry: true, maxLinks: 1 };
+  
   const [name, setName] = useState("");
-  const [country, setCountry] = useState(arabCountries[0].name); // (جديد)
-  // (جديد) دعم 3 روابط
+  const [country, setCountry] = useState(arabCountries[0].name); 
   const [links, setLinks] = useState([""]);
   const [checked, setChecked] = useState(false);
   
@@ -16,7 +18,7 @@ export default function GlassCard({ settings }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   
-  // (جديد) دوال للتحكم بالروابط
+  // دوال للتحكم بالروابط
   const handleLinkChange = (index, value) => {
     const newLinks = [...links];
     newLinks[index] = value;
@@ -24,8 +26,7 @@ export default function GlassCard({ settings }) {
   };
   
   const addLinkField = () => {
-    // (جديد) القراءة من الإعدادات، بحد أقصى 3
-    const maxLinks = Math.min(settings.maxLinks || 1, 3); 
+    const maxLinks = Math.min(currentSettings.maxLinks || 1, 3); 
     if (links.length < maxLinks) {
       setLinks([...links, ""]);
     }
@@ -42,7 +43,7 @@ export default function GlassCard({ settings }) {
     setSuccess("");
     
     if (!name) return setError("الرجاء إدخال اسم الحساب.");
-    if (settings.enableCountry && !country) return setError("الرجاء اختيار البلد."); // (جديد)
+    if (currentSettings.enableCountry && !country) return setError("الرجاء اختيار البلد."); 
     if (links.some(link => !link)) return setError("الرجاء ملء جميع حقول الروابط.");
     if (!checked) return setError("الرجاء التأكيد أنك لست روبوت.");
 
@@ -50,8 +51,8 @@ export default function GlassCard({ settings }) {
     try {
       await addDoc(collection(db, "submissions"), {
         name,
-        country: settings.enableCountry ? country : "", // (جديد)
-        links: links.map(link => link.split('?')[0]), // (جديد) تنظيف الرابط
+        country: currentSettings.enableCountry ? country : "",
+        links: links.map(link => link.split('?')[0]),
         votes: 0,
         approved: false,
         createdAt: serverTimestamp()
@@ -77,7 +78,7 @@ export default function GlassCard({ settings }) {
       {error && <p className="text-red-300 bg-red-900/50 p-3 rounded-lg mb-4 text-center">{error}</p>}
       
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* (جديد) حقل الاسم */}
+        {/* حقل الاسم */}
         <div>
           <label className="text-sm text-gray-300 mb-1 block">اسم الحساب</label>
           <input 
@@ -90,8 +91,8 @@ export default function GlassCard({ settings }) {
           />
         </div>
 
-        {/* (جديد) حقل البلدان (اختياري) */}
-        {settings.enableCountry && (
+        {/* حقل البلدان (اختياري) */}
+        {currentSettings.enableCountry && (
           <div>
             <label className="text-sm text-gray-300 mb-1 block">البلد</label>
             <select
@@ -109,7 +110,7 @@ export default function GlassCard({ settings }) {
           </div>
         )}
         
-        {/* (جديد) حقول الروابط الديناميكية */}
+        {/* حقول الروابط الديناميكية */}
         <div>
           <label className="text-sm text-gray-300 mb-1 block">
             {links.length > 1 ? "روابط المشاركات" : "رابط المشاركة"} (رابط فيديو تيك توك)
@@ -131,8 +132,8 @@ export default function GlassCard({ settings }) {
               )}
             </div>
           ))}
-          {/* (جديد) السماح بإضافة حتى 3 روابط (أو حسب الإعدادات) */}
-          {links.length < Math.min(settings.maxLinks || 1, 3) && (
+          {/* السماح بإضافة حتى 3 روابط (أو حسب الإعدادات) */}
+          {links.length < Math.min(currentSettings.maxLinks || 1, 3) && (
             <button 
               type="button" 
               onClick={addLinkField} 
@@ -144,7 +145,7 @@ export default function GlassCard({ settings }) {
           )}
         </div>
 
-        {/* (جديد) زر أنا لست روبوت */}
+        {/* زر أنا لست روبوت */}
         <div className="flex items-center mt-4">
           <input 
             type="checkbox" 
