@@ -1,5 +1,4 @@
-// src/pages/Home.jsx
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import GlassCard from "../components/GlassCard";
 import Podium from "../components/Podium";
 import Carousel from "../components/Carousel";
@@ -19,7 +18,8 @@ export default function Home() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setStage(docSnap.data().stage); // تحديث المرحلة
+          setStage(docSnap.data().stage || "submission");
+          console.log("Contest settings:", docSnap.data());
         } else {
           console.warn("Document contest_settings/main not found!");
         }
@@ -27,7 +27,6 @@ export default function Home() {
         console.error("Error fetching settings:", error);
       }
     }
-
     fetchSettings();
   }, []);
 
@@ -38,12 +37,12 @@ export default function Home() {
         const querySnapshot = await getDocs(collection(db, "submissions"));
         const data = [];
         querySnapshot.forEach(doc => data.push({ id: doc.id, ...doc.data() }));
+        console.log("Submissions fetched:", data);
         setSubmissions(data);
       } catch (error) {
         console.error("Error fetching submissions:", error);
       }
     }
-
     fetchSubmissions();
   }, []);
 
