@@ -1,41 +1,53 @@
 import React, { useEffect, useState } from "react";
-// المسار الصحيح: الخروج من 'pages'
 import GlassCard from "../components/GlassCard";
 import Podium from "../components/Podium";
 import Carousel from "../components/Carousel";
 import VideoCard from "../components/VideoCard";
 import { db } from "../firebase/firebase";
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+// (تعديل) استيراد onSnapshot للاستماع الفوري
+import { doc, getDoc, collection, getDocs, onSnapshot } from "firebase/firestore";
 
 export default function Home() {
   const [stage, setStage] = useState("submission");
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // (تم التعديل) جلب إعدادات المسابقة بشكل فوري
   useEffect(() => {
-    async function fetchSettings() {
-      try {
-        const docRef = doc(db, "contest_settings", "main");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setStage(docSnap.data().stage || "submission");
-        } else {
-          setStage("submission");
-        }
-      } catch (error) {
-        console.error("Error fetching settings:", error);
+    const docRef = doc(db, "contest_settings", "main");
+    
+    // استخدام onSnapshot بدلاً من getDoc
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setStage(data.stage || "submission");
+      } else {
+        console.warn("Document contest_settings/main not found!");
         setStage("submission");
       }
-    }
-    fetchSettings();
-  }, []);
+    }, (error) => {
+      console.error("Error fetching settings:", error);
+      setStage("submission");
+    });
 
+    // تنظيف الاشتراك عند إغلاق الصفحة
+    return () => unsubscribe();
+  }, []); // سيعمل مرة واحدة عند تحميل الصفحة
+
+  // جلب المشاركات
   useEffect(() => {
+    // (ملاحظة: هذا الكود يجلب المشاركات مرة واحدة فقط عند التحميل)
+    // (إذا أردت تحديث التصويت بشكل فوري، يجب تحويل هذا إلى onSnapshot أيضاً)
     async function fetchSubmissions() {
       try {
         const querySnapshot = await getDocs(collection(db, "submissions"));
         const data = [];
-        querySnapshot.forEach(doc => data.push({ id: doc.id, ...doc.data() }));
+        querySnapshot.forEach(doc => {
+          // جلب المشاركات المقبولة فقط
+          if (doc.data().approved) {
+            data.push({ id: doc.id, ...doc.data() });
+          }
+        });
         setSubmissions(data);
       } catch (error) {
         console.error("Error fetching submissions:", error);
@@ -44,7 +56,17 @@ export default function Home() {
       }
     }
     fetchSubmissions();
-  }, []);
+  }, [stage]); // (إضافة) إعادة جلب المشاركات عند تغير المرحلة
+
+  if (loading && stage === "submission") {
+    // عرض فورم التقديم فوراً إذا كانت مرحلة التقديم
+    // هذا يحل مشكلة الانتظار الطويل لتحميل المشاركات
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-black text-white">
+        <GlassCard />
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -54,6 +76,7 @@ export default function Home() {
     );
   }
 
+  // مرحلة التقديم
   if (stage === "submission") {
     return (
       <div className="min-h-screen flex justify-center items-center bg-black text-white">
@@ -62,6 +85,7 @@ export default function Home() {
     );
   }
 
+  // مرحلة التصويت
   return (
     <div className="min-h-screen bg-black text-white p-4">
       {submissions.length > 0 ? (
@@ -76,7 +100,7 @@ export default function Home() {
         </>
       ) : (
         <div className="flex justify-center items-center min-h-screen">
-          <p className="text-white text-lg">لا توجد مشاركات حالياً</p>
+          <p className="text-white text-lg">لا توجد مشاركات (مقبولة) حالياً</p>
         </div>
       )}
     </div>
