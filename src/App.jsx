@@ -2,9 +2,9 @@
 import React, { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Award, HelpCircle, Users } from "lucide-react";
-import useSettings from "./hooks/useSettings"; // <-- استيراد الهوك
+import useSettings from "./hooks/useSettings";
 
-// Lazy-loaded pages (based on your folder structure)
+// Lazy-loaded pages (بقية ملفاتك)
 const Home = lazy(() => import("./pages/Home"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Winners = lazy(() => import("./pages/Winners"));
@@ -57,7 +57,7 @@ const Header = () => (
         </Link>
         <Link
           to="/faq"
-          className="text-gray-300 transition-colors flex items-center gap-2 hover:text-[var(--color-highlight)]"
+          className="text-gray-300 hover:text-[var(--color-highlight)] transition-colors flex items-center gap-2"
         >
           <HelpCircle size={18} /> الأسئلة الشائعة
         </Link>
