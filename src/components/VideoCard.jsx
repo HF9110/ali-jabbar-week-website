@@ -1,35 +1,74 @@
 // src/components/VideoCard.jsx
-import React from "react";
-import { Play } from "lucide-react";
-import GlassCard from "./GlassCard";
+import { useState } from "react";
+import { PlayCircle } from "lucide-react";
+import VideoModal from "./VideoModal";
 
-export default function VideoCard({ item, onVote }) {
+export default function VideoCard({
+  name,
+  country,
+  thumbnail_url,
+  video_url,
+  votes,
+  onVote,
+}) {
+  const [openVideo, setOpenVideo] = useState(false);
+
   return (
-    <GlassCard>
-      <div className="flex flex-col gap-3">
-
-        <div className="w-full h-56 rounded-xl overflow-hidden">
-          <img
-            src={item.thumbnail_url || "https://placehold.co/400x600?text=No+Image"}
-            className="w-full h-full object-cover"
-          />
-        </div>
-
-        <div>
-          <h3 className="text-lg font-bold text-white">{item.name}</h3>
-          {item.country && (
-            <p className="text-gray-300 text-sm">{item.country}</p>
-          )}
-        </div>
-
-        <button
-          onClick={onVote}
-          className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg flex items-center justify-center gap-2"
+    <>
+      {/* Card */}
+      <div
+        className="
+          bg-white/10 backdrop-blur-xl 
+          border border-white/20 
+          rounded-2xl p-4 
+          shadow-xl hover:shadow-2xl 
+          transition-all cursor-pointer
+        "
+      >
+        {/* Video Thumbnail */}
+        <div
+          className="relative w-full h-52 overflow-hidden rounded-xl"
+          onClick={() => setOpenVideo(true)}
         >
-          <Play size={16} /> صوّت الآن
-        </button>
+          <img
+            src={thumbnail_url}
+            className="w-full h-full object-cover rounded-xl"
+          />
 
+          {/* Play Icon */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <PlayCircle size={60} className="text-white/80 hover:text-white" />
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className="mt-4">
+          <h2 className="text-xl text-white font-semibold">{name}</h2>
+          <p className="text-gray-300">{country}</p>
+
+          <p className="text-green-300 mt-2">
+            الأصوات: <span className="font-bold">{votes}</span>
+          </p>
+
+          <button
+            onClick={onVote}
+            className="
+              mt-3 px-4 py-2 rounded-xl 
+              bg-purple-600 hover:bg-purple-700 
+              text-white w-full
+            "
+          >
+            تصويت
+          </button>
+        </div>
       </div>
-    </GlassCard>
+
+      {/* Video Modal */}
+      <VideoModal
+        open={openVideo}
+        onClose={() => setOpenVideo(false)}
+        videoUrl={video_url}
+      />
+    </>
   );
 }
