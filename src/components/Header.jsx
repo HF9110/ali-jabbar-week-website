@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '../firebase/firebase.js'; // المسار الصحيح
+import { db } from '../firebase/firebase.js';
 
 export default function Header() {
   const [settings, setSettings] = useState({ title: 'مسابقة', logo: '' });
 
-  // جلب الإعدادات بشكل فوري
   useEffect(() => {
     const docRef = doc(db, "contest_settings", "main");
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
@@ -26,7 +25,7 @@ export default function Header() {
           src={settings.logo} 
           alt="Logo" 
           className="h-12 md:h-16 max-w-[200px] object-contain"
-          onError={(e) => e.target.style.display = 'none'} // إخفاء الصورة إذا فشل التحميل
+          onError={(e) => e.target.style.display = 'none'}
         />
       )}
     </header>

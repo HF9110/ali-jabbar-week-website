@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Modal from "./Modal.jsx"; // (تصحيح) إضافة .jsx
-import { arabCountries } from "../utils/countries.js"; // (جديد)
+import { arabCountries } from "../utils/countries.js"; // (تصحيح) إضافة .js
 
-// (جديد) دالة لجلب العلم
+// دالة لجلب العلم
 const getFlag = (countryName) => {
   const country = arabCountries.find(c => c.name === countryName);
   return country ? country.flag : '🌎';
@@ -12,8 +12,7 @@ export default function VideoCard({ submission }) {
   const [open, setOpen] = useState(false);
   if (!submission) return null;
 
-  // (جديد) استخدام الصورة المصغرة المحددة
-  const thumbnailUrl = submission.thumbnail_url || `https://placehold.co/600x400/000000/FFFFFF?text=Video&font=cairo`;
+  const thumbnailUrl = submission.thumbnail_url || `https://placehold.co/400x600/000000/FFFFFF?text=Video&font=cairo`;
   const countryFlag = submission.country ? getFlag(submission.country) : '';
 
   return (
@@ -22,7 +21,8 @@ export default function VideoCard({ submission }) {
         className="glass-card bg-white/10 backdrop-blur-lg rounded-lg p-3 cursor-pointer shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105"
         onClick={() => setOpen(true)}
       >
-        <div className="w-full aspect-video rounded-md overflow-hidden bg-black/20">
+        {/* (تعديل) جعل الصورة عمودية (9/16) */}
+        <div className="w-full aspect-[9/16] rounded-md overflow-hidden bg-black/20">
           <img
             src={thumbnailUrl}
             alt={submission.name || "Submission"}

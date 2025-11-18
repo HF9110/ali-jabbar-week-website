@@ -4,4 +4,14 @@
 
 body {
   font-family: 'Cairo', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* (جديد) كلاس مساعد للتصميم الزجاجي */
+.glass-card {
+  /* زيادة الضبابية */
+  background-color: rgba(255, 255, 255, 0.08); 
+  -webkit-backdrop-filter: blur(40px);
+  backdrop-filter: blur(40px);
 }

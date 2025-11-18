@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { db } from "../firebase/firebase.js"; // (تصحيح) إضافة .js
+import { db } from "../firebase/firebase.js";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { Plus, Trash2 } from "lucide-react";
-import { arabCountries } from "../utils/countries.js"; // (جديد)
+import { arabCountries } from "../utils/countries.js";
 
 export default function GlassCard({ settings }) {
   const currentSettings = settings || { enableCountry: true, maxLinks: 1 };
@@ -17,7 +17,6 @@ export default function GlassCard({ settings }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   
-  // دوال للتحكم بالروابط
   const handleLinkChange = (index, value) => {
     const newLinks = [...links];
     newLinks[index] = value;
@@ -101,7 +100,6 @@ export default function GlassCard({ settings }) {
               disabled={loading}
             >
               {arabCountries.map(c => (
-                // (تعديل) إضافة الإيموجي في القائمة المنسدلة
                 <option key={c.name} value={c.name} className="text-black">
                   {c.flag} {c.name}
                 </option>
@@ -132,7 +130,7 @@ export default function GlassCard({ settings }) {
               )}
             </div>
           ))}
-          {/* (جديد) السماح بإضافة حتى 3 روابط (أو حسب الإعدادات) */}
+          {/* السماح بإضافة حتى 3 روابط (أو حسب الإعدادات) */}
           {links.length < Math.min(currentSettings.maxLinks || 1, 3) && (
             <button 
               type="button" 
