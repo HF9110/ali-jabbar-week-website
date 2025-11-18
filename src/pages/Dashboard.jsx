@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [votes, setVotes] = useState(0);
 
   useEffect(() => {
+    // جلب إحصائيات المشاركات من Firestore
     const unsub = onSnapshot(collection(db, "submissions"), (snap) => {
       let _pending = 0,
         _approved = 0,
@@ -39,12 +40,13 @@ export default function Dashboard() {
       className="max-w-5xl mx-auto p-6 text-white"
     >
       <h1 className="text-3xl font-bold mb-8 flex items-center gap-3">
+        {/* أيقونة العنوان تستخدم اللون الذهبي الديناميكي */}
         <LayoutDashboard size={28} className="text-[var(--color-highlight)]" />
         الإحصائيات العامة
       </h1>
 
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {/* Pending */}
+        {/* Pending Card (Glassmorphism) */}
         <div className="p-6 glass-card rounded-xl border border-white/10 shadow-xl flex items-center gap-4">
           <Clock className="text-yellow-400" size={36} />
           <div>
@@ -53,7 +55,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Approved */}
+        {/* Approved Card (Glassmorphism) */}
         <div className="p-6 glass-card rounded-xl border border-white/10 shadow-xl flex items-center gap-4">
           <CheckCircle className="text-green-400" size={36} />
           <div>
@@ -62,7 +64,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Votes */}
+        {/* Votes Card (Glassmorphism) */}
         <div className="p-6 glass-card rounded-xl border border-white/10 shadow-xl flex items-center gap-4">
           <TrendingUp className="text-blue-400" size={36} />
           <div>

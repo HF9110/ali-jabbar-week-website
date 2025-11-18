@@ -1,29 +1,52 @@
-```javascript:Settings Page:src/pages/Settings.jsx
 import { useEffect, useState } from "react";
-import { db } from "../firebase/firebase.js"; 
+import { db } from "../firebase/firebase.js";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { AlertCircle, Save, CheckCircle, Palette, Radio, Edit3, Loader2, Settings as SettingsIcon, Type, Codesandbox } from 'lucide-react';
+import {
+  AlertCircle,
+  Save,
+  CheckCircle,
+  Palette,
+  Radio,
+  Edit3,
+  Loader2,
+  Settings as SettingsIcon,
+  Type,
+  Codesandbox,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
 // قائمة خطوط آمنة شائعة
-const safeFonts = ['Cairo', 'Arial', 'Tahoma', 'Times New Roman', 'Inter'];
+const safeFonts = ["Cairo", "Arial", "Tahoma", "Times New Roman", "Inter"];
 
 const Toggle = ({ label, enabled, onChange }) => (
   <label className="flex items-center justify-between cursor-pointer p-4 glass-card rounded-lg border border-white/10">
     <span className="text-sm font-medium text-gray-300">{label}</span>
     <div className="relative">
-      <input type="checkbox" className="sr-only" checked={enabled} onChange={onChange} />
+      <input
+        type="checkbox"
+        className="sr-only"
+        checked={enabled}
+        onChange={onChange}
+      />
       {/* استخدام متغيرات CSS لتطبيق اللون الأساسي */}
-      <div className={`block w-14 h-8 rounded-full ${enabled ? 'bg-[var(--color-primary)] shadow-lg' : 'bg-gray-700'}`}></div>
-      <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${enabled ? 'translate-x-6' : ''}`}></div>
+      <div
+        className={`block w-14 h-8 rounded-full ${
+          enabled ? "bg-[var(--color-primary)] shadow-lg" : "bg-gray-700"
+        }`}
+      ></div>
+      <div
+        className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${
+          enabled ? "translate-x-6" : ""
+        }`}
+      ></div>
     </div>
   </label>
 );
 
 export default function Settings() {
   const [settings, setSettings] = useState({
-    stage: "submission", 
+    stage: "submission",
     title: "مسابقة تيك توك",
     logo: "",
     enableCountry: true,
@@ -49,11 +72,14 @@ export default function Settings() {
       try {
         const mainDocRef = doc(db, "contest_settings", "main");
         const footerDocRef = doc(db, "contest_settings", "footer");
-        
-        const [mainSnap, footerSnap] = await Promise.all([getDoc(mainDocRef), getDoc(footerDocRef)]);
+
+        const [mainSnap, footerSnap] = await Promise.all([
+          getDoc(mainDocRef),
+          getDoc(footerDocRef),
+        ]);
 
         if (mainSnap.exists()) {
-          setSettings(prev => ({ ...prev, ...mainSnap.data() }));
+          setSettings((prev) => ({ ...prev, ...mainSnap.data() }));
         }
         if (footerSnap.exists()) {
           setFooterContent(footerSnap.data());
@@ -74,11 +100,15 @@ export default function Settings() {
     try {
       const mainDocRef = doc(db, "contest_settings", "main");
       const footerDocRef = doc(db, "contest_settings", "footer");
-      
+
       // حفظ الإعدادات الديناميكية
       await Promise.all([
-        setDoc(mainDocRef, { ...settings, maxLinks: Number(settings.maxLinks) }, { merge: true }),
-        setDoc(footerDocRef, footerContent, { merge: true })
+        setDoc(
+          mainDocRef,
+          { ...settings, maxLinks: Number(settings.maxLinks) },
+          { merge: true }
+        ),
+        setDoc(footerDocRef, footerContent, { merge: true }),
       ]);
 
       setSuccess("تم حفظ الإعدادات بنجاح!");
@@ -93,9 +123,9 @@ export default function Settings() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setSettings(prev => ({ 
-      ...prev, 
-      [name]: type === 'checkbox' ? checked : value 
+    setSettings((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -108,7 +138,7 @@ export default function Settings() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="max-w-3xl mx-auto space-y-8 p-6 text-white"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -117,7 +147,7 @@ export default function Settings() {
         <SettingsIcon size={24} className="text-[#d4af37]" />
         الإعدادات العامة
       </h1>
-      
+
       {error && (
         <div className="flex items-center gap-2 text-red-400 bg-red-800/20 p-4 rounded-lg border border-red-700">
           <AlertCircle /> {error}
@@ -136,7 +166,6 @@ export default function Settings() {
           التحكم الكامل بالتصميم والهوية
         </h2>
         <div className="grid md:grid-cols-2 gap-6">
-          
           {/* 1. اسم العنوان والشعار */}
           <div className="md:col-span-2 space-y-4">
             <input
@@ -147,17 +176,23 @@ export default function Settings() {
               className="w-full p-3 border rounded border-gray-700 bg-gray-800 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
             />
             <div className="flex items-center gap-2">
-                <input
-                  name="logo"
-                  value={settings.logo}
-                  onChange={handleInputChange}
-                  placeholder="رابط الشعار (Logo URL)"
-                  className="flex-grow p-3 border rounded border-gray-700 bg-gray-800 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
+              <input
+                name="logo"
+                value={settings.logo}
+                onChange={handleInputChange}
+                placeholder="رابط الشعار (Logo URL)"
+                className="flex-grow p-3 border rounded border-gray-700 bg-gray-800 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
+              />
+              {settings.logo && (
+                <img
+                  src={settings.logo}
+                  alt="Logo Preview"
+                  className="h-10 w-10 object-contain"
                 />
-                {settings.logo && <img src={settings.logo} alt="Logo Preview" className="h-10 w-10 object-contain" />}
+              )}
             </div>
           </div>
-          
+
           {/* 2. اللون الأساسي (Primary Color) */}
           <div className="flex items-center gap-3 glass-card p-3 rounded-lg border border-white/20">
             <Codesandbox size={18} className="text-gray-400" />
@@ -187,32 +222,39 @@ export default function Settings() {
           {/* 4. الخط العام */}
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-300 mb-1 flex items-center gap-2">
-                <Type size={18} className="text-gray-400" />
-                الخط العام (Font Family)
+              <Type size={18} className="text-gray-400" />
+              الخط العام (Font Family)
             </label>
             <select
-                name="appFont"
-                value={settings.appFont}
-                onChange={handleInputChange}
-                className="w-full p-3 border rounded border-gray-700 bg-gray-800 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
+              name="appFont"
+              value={settings.appFont}
+              onChange={handleInputChange}
+              className="w-full p-3 border rounded border-gray-700 bg-gray-800 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
             >
-                {safeFonts.map(font => <option key={font} value={font}>{font} (مثال)</option>)}
+              {safeFonts.map((font) => (
+                <option key={font} value={font}>
+                  {font} (مثال)
+                </option>
+              ))}
             </select>
           </div>
-          
+
           {/* 5. تفعيل الأسلوب الزجاجي */}
           <div className="md:col-span-2">
             <Toggle
               label="تفعيل الأسلوب الزجاجي (Glassmorphism)"
               enabled={settings.enableGlass}
-              onChange={(e) => setSettings(prev => ({...prev, enableGlass: e.target.checked}))}
+              onChange={(e) =>
+                setSettings((prev) => ({
+                  ...prev,
+                  enableGlass: e.target.checked,
+                }))
+              }
             />
           </div>
-
         </div>
       </div>
       {/* --- نهاية لوحة تحكم التصميم --- */}
-
 
       {/* إعدادات حالة المسابقة */}
       <div className="glass-card p-6 md:p-8 rounded-xl shadow-xl border border-white/10">
@@ -222,10 +264,19 @@ export default function Settings() {
         </h2>
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">مرحلة المسابقة</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              مرحلة المسابقة
+            </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {['submission', 'voting', 'paused', 'ended'].map(stageValue => (
-                <label key={stageValue} className={`p-4 border rounded-lg text-center cursor-pointer transition-all ${settings.stage === stageValue ? 'bg-[var(--color-primary)] text-gray-900 font-bold border-[var(--color-highlight)] shadow-xl' : 'bg-white/10 hover:bg-white/20 border-gray-700'}`}>
+              {["submission", "voting", "paused", "ended"].map((stageValue) => (
+                <label
+                  key={stageValue}
+                  className={`p-4 border rounded-lg text-center cursor-pointer transition-all ${
+                    settings.stage === stageValue
+                      ? "bg-[var(--color-primary)] text-gray-900 font-bold border-[var(--color-highlight)] shadow-xl"
+                      : "bg-white/10 hover:bg-white/20 border-gray-700"
+                  }`}
+                >
                   <input
                     type="radio"
                     name="stage"
@@ -234,10 +285,10 @@ export default function Settings() {
                     onChange={handleInputChange}
                     className="sr-only"
                   />
-                  {stageValue === 'submission' && '1. التقديم'}
-                  {stageValue === 'voting' && '2. بدء التصويت'}
-                  {stageValue === 'paused' && '3. إيقاف مؤقتاً'}
-                  {stageValue === 'ended' && '4. إنهاء المسابقة'}
+                  {stageValue === "submission" && "1. التقديم"}
+                  {stageValue === "voting" && "2. بدء التصويت"}
+                  {stageValue === "paused" && "3. إيقاف مؤقتاً"}
+                  {stageValue === "ended" && "4. إنهاء المسابقة"}
                 </label>
               ))}
             </div>
@@ -252,46 +303,65 @@ export default function Settings() {
           إعدادات الروابط والمحتوى
         </h2>
         <div className="space-y-6">
-            <Toggle
-                label="تفعيل حقل البلد"
-                enabled={settings.enableCountry}
-                onChange={(e) => setSettings(prev => ({...prev, enableCountry: e.target.checked}))}
-            />
-            <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">الحد الأقصى لروابط المشاركة</label>
-                <select
-                name="maxLinks"
-                value={settings.maxLinks}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-700 rounded-lg shadow-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-gray-800 text-white"
-                >
-                <option value={1}>1</option>
-                <option value={2}>2</option>
-                <option value={3}>3</option>
-                </select>
-            </div>
-            {['terms', 'about', 'purpose'].map(key => (
+          <Toggle
+            label="تفعيل حقل البلد"
+            enabled={settings.enableCountry}
+            onChange={(e) =>
+              setSettings((prev) => ({
+                ...prev,
+                enableCountry: e.target.checked,
+              }))
+            }
+          />
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              الحد الأقصى لروابط المشاركة
+            </label>
+            <select
+              name="maxLinks"
+              value={settings.maxLinks}
+              onChange={handleInputChange}
+              className="w-full p-3 border border-gray-700 rounded-lg shadow-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-gray-800 text-white"
+            >
+              <option value={1}>1</option>
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+            </select>
+          </div>
+          {["terms", "about", "purpose"].map((key) => (
             <div key={key}>
               <label className="block text-sm font-medium text-gray-300 mb-1">
-                {key === 'terms' ? 'شروط المسابقة' : key === 'about' ? 'القائمون على المسابقة' : 'لماذا هذه المسابقة؟'}
+                {key === "terms"
+                  ? "شروط المسابقة"
+                  : key === "about"
+                  ? "القائمون على المسابقة"
+                  : "لماذا هذه المسابقة؟"}
               </label>
               <textarea
                 name={key}
                 rows="4"
                 value={footerContent[key]}
-                onChange={(e) => setFooterContent(prev => ({ ...prev, [key]: e.target.value }))}
+                onChange={(e) =>
+                  setFooterContent((prev) => ({
+                    ...prev,
+                    [key]: e.target.value,
+                  }))
+                }
                 className="w-full p-3 border border-gray-700 rounded-lg shadow-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-gray-800 text-white"
               />
             </div>
-            ))}
+          ))}
         </div>
       </div>
-
 
       <button
         onClick={handleSave}
         className="flex items-center justify-center gap-2 w-full md:w-auto btn-vote px-6 py-3 rounded-lg shadow-lg"
-        style={{ backgroundColor: settings.mainColor, color: settings.mainColor ? 'black' : 'white' }} 
+        // يتم تطبيق اللون الأساسي هنا
+        style={{
+          backgroundColor: settings.mainColor,
+          color: settings.mainColor ? "black" : "white",
+        }}
       >
         <Save size={18} />
         حفظ جميع الإعدادات
