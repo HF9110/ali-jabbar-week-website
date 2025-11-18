@@ -1,6 +1,6 @@
 // src/hooks/useSubmissions.js
 import { useEffect, useState } from "react";
-// يجب استيراد جميع الدوال صراحة: collection, onSnapshot, query, where, orderBy
+// يجب استيراد جميع الدوال صراحة لحل TypeError
 import {
   collection,
   onSnapshot,
@@ -34,7 +34,6 @@ export default function useSubmissions(filterType = "approved") {
         orderBy("created_at", "desc")
       );
     }
-    // إذا كان filterType === "all"، يستخدم q الافتراضي بالأعلى (بدون where)
 
     const unsub = onSnapshot(q, (snap) => {
       const arr = [];
