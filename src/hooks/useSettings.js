@@ -8,10 +8,10 @@ export default function useSettings() {
   useEffect(() => {
     // جلب الإعدادات من المسار الموحد: "contest_settings/main"
     const unsub = onSnapshot(doc(db, "contest_settings", "main"), (snap) => {
-      // تعيين قيم افتراضية للألوان في حال عدم وجود بيانات
+      // تعيين قيم افتراضية قوية لمتغيرات الثيم
       const defaultSettings = {
-        mainColor: "#d4af37",
-        highlightColor: "#fde047",
+        mainColor: "#d4af37", // اللون الأساسي (الذهبي)
+        highlightColor: "#fde047", // لون التوهج
         appFont: "Cairo",
         enableGlass: true,
         stage: "paused",

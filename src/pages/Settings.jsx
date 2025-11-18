@@ -357,7 +357,6 @@ export default function Settings() {
       <button
         onClick={handleSave}
         className="flex items-center justify-center gap-2 w-full md:w-auto btn-vote px-6 py-3 rounded-lg shadow-lg"
-        // يتم تطبيق اللون الأساسي هنا
         style={{
           backgroundColor: settings.mainColor,
           color: settings.mainColor ? "black" : "white",
