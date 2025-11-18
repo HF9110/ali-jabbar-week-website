@@ -4,11 +4,11 @@ import Sidebar from "../components/Sidebar.jsx";
 import Pending from "./Pending.jsx";
 import Approved from "./Approved.jsx";
 import Settings from "./Settings.jsx";
-import Dashboard from "./Dashboard.jsx"; // (جديد) إضافة صفحة الإحصائيات
-import ManageSubmissions from "./ManageSubmissions.jsx"; // (جديد) إضافة صفحة الإضافة/التعديل
+import Dashboard from "./Dashboard.jsx"; // (جديد) صفحة الإحصائيات
+import ManageSubmissions from "./ManageSubmissions.jsx"; // (جديد) الإضافة/التعديل
 import { auth } from "../firebase/firebase.js"; // (تصحيح) إضافة .js
 import { useEffect } from "react";
-import { AnimatePresence } from "framer-motion"; // (جديد) للأنميشن
+import { AnimatePresence } from "framer-motion";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -21,20 +21,19 @@ export default function AdminDashboard() {
   }, [navigate]);
 
   return (
-    // (تصميم جديد) خلفية رمادية فاتحة
+    // (تصميم جديد) الخلفية رمادية فاتحة والجانب أبيض
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
       <main className="flex-1 p-6 lg:p-10 overflow-auto">
-        {/* (جديد) إضافة أنميشن لتبديل الصفحات */}
+        {/* إضافة أنميشن لتبديل الصفحات */}
         <AnimatePresence mode="wait">
           <Routes>
-            {/* (جديد) تحديد صفحة الإحصائيات كصفحة رئيسية */}
+            {/* تحديد صفحة الإحصائيات كصفحة رئيسية */}
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="pending" element={<Pending />} />
             <Route path="approved" element={<Approved />} />
             <Route path="settings" element={<Settings />} />
-            {/* (جديد) روت لصفحة الإضافة/التعديل */}
             <Route path="manage" element={<ManageSubmissions />} />
             <Route path="manage/:id" element={<ManageSubmissions />} />
           </Routes>
