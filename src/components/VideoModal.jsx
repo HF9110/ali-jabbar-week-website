@@ -1,8 +1,8 @@
-// src/components/VoteModal.jsx
+// src/components/VideoModal.jsx
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
-export default function VoteModal({ open, onClose, onConfirm }) {
+export default function VideoModal({ open, onClose, videoUrl }) {
   if (!open) return null;
 
   return (
@@ -22,8 +22,8 @@ export default function VoteModal({ open, onClose, onConfirm }) {
           fixed top-1/2 left-1/2 z-50 
           bg-black/20 backdrop-blur-xl border border-white/20 
           rounded-2xl shadow-2xl 
-          w-[90%] max-w-md 
-          p-6
+          w-[95%] max-w-3xl 
+          p-4
         "
         initial={{ opacity: 0, scale: 0.85 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -39,20 +39,15 @@ export default function VoteModal({ open, onClose, onConfirm }) {
           <X size={26} />
         </button>
 
-        {/* Modal Content */}
-        <h2 className="text-xl text-white font-bold mb-4">
-          تأكيد التصويت
-        </h2>
-        <p className="text-gray-300 mb-6">
-          هل أنت متأكد أنك تريد التصويت لهذا الفيديو؟
-        </p>
-
-        <button
-          onClick={onConfirm}
-          className="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold"
-        >
-          تصويت
-        </button>
+        {/* Video Content */}
+        <div className="w-full h-[60vh] md:h-[70vh] rounded-xl overflow-hidden">
+          <video
+            src={videoUrl}
+            controls
+            autoPlay
+            className="w-full h-full object-cover rounded-xl"
+          />
+        </div>
       </motion.div>
     </AnimatePresence>
   );
