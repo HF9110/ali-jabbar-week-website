@@ -1,6 +1,6 @@
 // src/hooks/useSubmissions.js
 import { useEffect, useState } from "react";
-// تم التأكد من استيراد الدوال الأساسية المطلوبة للـ Hook
+// يجب استيراد جميع الدوال صراحة: collection, onSnapshot, query, where, orderBy
 import {
   collection,
   onSnapshot,
@@ -14,26 +14,27 @@ export default function useSubmissions(filterType = "approved") {
   const [list, setList] = useState([]);
 
   useEffect(() => {
-    // تم إصلاح الاستيرادات لضمان عمل هذا الـ Hook بشكل صحيح
     const collectionRef = collection(db, "submissions");
-    let q = collectionRef;
+    // تعيين ترتيب افتراضي لكل الاستعلامات
+    let q = query(collectionRef, orderBy("created_at", "desc"));
 
     // تطبيق الفلترة (المنطق الأصلي للملف)
     if (filterType === "approved") {
+      // الاستعلام الذي يتطلب فهرسة
       q = query(
         collectionRef,
         where("approved", "==", true),
         orderBy("created_at", "desc")
       );
     } else if (filterType === "pending") {
+      // الاستعلام الذي يتطلب فهرسة
       q = query(
         collectionRef,
         where("approved", "==", false),
         orderBy("created_at", "desc")
       );
-    } else if (filterType === "all") {
-      q = query(collectionRef, orderBy("created_at", "desc"));
     }
+    // إذا كان filterType === "all"، يستخدم q الافتراضي بالأعلى (بدون where)
 
     const unsub = onSnapshot(q, (snap) => {
       const arr = [];
