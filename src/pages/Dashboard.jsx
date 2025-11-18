@@ -1,6 +1,7 @@
 // src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore"; // <-- التأكد من استيراد Firestore
+// يجب استيراد collection و onSnapshot بشكل صريح
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { CheckCircle, Clock, TrendingUp, LayoutDashboard } from "lucide-react";
 import { motion } from "framer-motion";
@@ -40,6 +41,7 @@ export default function Dashboard() {
       className="max-w-5xl mx-auto p-6 text-white"
     >
       <h1 className="text-3xl font-bold mb-8 flex items-center gap-3">
+        {/* أيقونة العنوان تستخدم اللون الذهبي الديناميكي */}
         <LayoutDashboard size={28} className="text-[var(--color-highlight)]" />
         الإحصائيات العامة
       </h1>

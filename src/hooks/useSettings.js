@@ -1,5 +1,6 @@
 // src/hooks/useSettings.js
 import { useEffect, useState } from "react";
+// تأكيد الاستيرادات الأساسية
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
