@@ -1,72 +1,86 @@
 // src/pages/Home.jsx
-import React, { useState, useMemo } from "react";
-import useSubmissions from "../hooks/useSubmissions";
+import { useState } from "react";
 import VideoCard from "../components/VideoCard";
+import VideoModal from "../components/VideoModal";
 import ConfirmVoteModal from "../components/ConfirmVoteModal";
-import { Search, Globe } from "lucide-react";
+
+const mockResults = [
+  { name: "Ali", country: "Iraq", thumbnail_url: "/thumbnails/1.jpg", video_url: "/videos/1.mp4", votes: 12 },
+  { name: "Sara", country: "Jordan", thumbnail_url: "/thumbnails/2.jpg", video_url: "/videos/2.mp4", votes: 8 },
+];
+
+const mockParticipants = [
+  { name: "Ahmed", country: "Egypt", thumbnail_url: "/thumbnails/3.jpg", video_url: "/videos/3.mp4", votes: 5 },
+  { name: "Lina", country: "Lebanon", thumbnail_url: "/thumbnails/4.jpg", video_url: "/videos/4.mp4", votes: 7 },
+];
 
 export default function Home() {
-  const submissions = useSubmissions("approved");
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [voteModalOpen, setVoteModalOpen] = useState(false);
 
-  const [search, setSearch] = useState("");
-  const [countryFilter, setCountryFilter] = useState("");
-  const [selected, setSelected] = useState(null);
-
-  const filtered = useMemo(() => {
-    return submissions.filter(item => {
-      const matchName = item.name.toLowerCase().includes(search.toLowerCase());
-      const matchCountry = countryFilter ? item.country === countryFilter : true;
-      return matchName && matchCountry;
-    });
-  }, [search, countryFilter, submissions]);
+  const handleVote = (participant) => {
+    setVoteModalOpen(true);
+  };
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
+    <div className="min-h-screen bg-gray-900 text-white">
+      {/* الشعار */}
+      <header className="py-6 text-center text-3xl font-bold">🏆 مسابقة الفيديو الأسبوعية</header>
 
-      {/* Search + Country */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
-        <div className="flex items-center bg-white/10 backdrop-blur-lg p-3 rounded-xl border border-white/20 flex-1">
-          <Search className="text-white opacity-70" />
-          <input
-            placeholder="بحث باسم المستخدم..."
-            className="bg-transparent w-full px-3 text-white"
-            onChange={e => setSearch(e.target.value)}
-          />
+      {/* النتائج المباشرة */}
+      <section className="px-4">
+        <h2 className="text-2xl font-semibold mb-4">النتائج المباشرة</h2>
+        <div className="space-y-4">
+          {mockResults.map((p, idx) => (
+            <VideoCard key={idx} {...p} onVote={() => handleVote(p)} />
+          ))}
         </div>
+      </section>
 
-        <div className="flex items-center bg-white/10 backdrop-blur-lg p-3 rounded-xl border border-white/20">
-          <Globe className="text-white opacity-70" />
-          <select
-            className="bg-transparent text-white px-3 outline-none"
-            onChange={e => setCountryFilter(e.target.value)}
-          >
-            <option value="">كل الدول</option>
-            <option value="العراق">🇮🇶 العراق</option>
-            <option value="السعودية">🇸🇦 السعودية</option>
-            <option value="الجزائر">🇩🇿 الجزائر</option>
-            <option value="مصر">🇪🇬 مصر</option>
-            <option value="المغرب">🇲🇦 المغرب</option>
-          </select>
+      <hr className="my-8 border-gray-700" />
+
+      {/* المشاركات */}
+      <section className="px-4">
+        <h2 className="text-2xl font-semibold mb-4">المشاركات</h2>
+        <div className="space-y-4">
+          {mockParticipants.map((p, idx) => (
+            <VideoCard key={idx} {...p} onVote={() => handleVote(p)} />
+          ))}
         </div>
-      </div>
+      </section>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {filtered.map(item => (
-          <VideoCard
-            key={item.id}
-            item={item}
-            onVote={() => setSelected(item)}
-          />
-        ))}
-      </div>
+      {/* شروط المسابقة */}
+      <section className="px-4 mt-8 mb-4">
+        <button
+          className="text-purple-400 hover:underline"
+          onClick={() => setVoteModalOpen(true)}
+        >
+          شروط المسابقة / لماذا هذه المسابقة
+        </button>
+      </section>
 
-      {/* Modal */}
+      {/* الفوتر */}
+      <footer className="text-center py-4 border-t border-gray-700">
+        جميع الحقوق محفوظة &copy; 2025
+      </footer>
+
+      {/* Video Modal */}
+      {selectedVideo && (
+        <VideoModal
+          open={!!selectedVideo}
+          videoUrl={selectedVideo.video_url}
+          onClose={() => setSelectedVideo(null)}
+        />
+      )}
+
+      {/* Confirm Vote Modal */}
       <ConfirmVoteModal
-        open={!!selected}
-        onClose={() => setSelected(null)}
-        userId={selected?.id}
-        userName={selected?.name}
+        open={voteModalOpen}
+        onClose={() => setVoteModalOpen(false)}
+        onConfirm={() => {
+          alert("تم التصويت!");
+          setVoteModalOpen(false);
+        }}
       />
     </div>
   );
