@@ -7,4 +7,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
-);
+);import { Toaster } from "react-hot-toast";
+
+<Toaster
+  position="top-center"
+  toastOptions={{
+    style: {
+      background: "#333",
+      color: "#fff",
+      borderRadius: "10px",
+    }
+  }}
+/>

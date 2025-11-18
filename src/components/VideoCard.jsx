@@ -1,44 +1,35 @@
-import { useState } from "react";
-import Modal from "./Modal.jsx"; // (تصحيح) إضافة .jsx
-import { arabCountries } from "../utils/countries.js"; // (تصحيح) إضافة .js
+// src/components/VideoCard.jsx
+import React from "react";
+import { Play } from "lucide-react";
+import GlassCard from "./GlassCard";
 
-// دالة لجلب العلم
-const getFlag = (countryName) => {
-  const country = arabCountries.find(c => c.name === countryName);
-  return country ? country.flag : '🌎';
-};
-
-export default function VideoCard({ submission }) {
-  const [open, setOpen] = useState(false);
-  if (!submission) return null;
-
-  const thumbnailUrl = submission.thumbnail_url || `https://placehold.co/400x600/000000/FFFFFF?text=Video&font=cairo`;
-  const countryFlag = submission.country ? getFlag(submission.country) : '';
-
+export default function VideoCard({ item, onVote }) {
   return (
-    <>
-      <div
-        className="glass-card bg-white/10 backdrop-blur-lg rounded-lg p-3 cursor-pointer shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105"
-        onClick={() => setOpen(true)}
-      >
-        {/* (تعديل) جعل الصورة عمودية (9/16) */}
-        <div className="w-full aspect-[9/16] rounded-md overflow-hidden bg-black/20">
+    <GlassCard>
+      <div className="flex flex-col gap-3">
+
+        <div className="w-full h-56 rounded-xl overflow-hidden">
           <img
-            src={thumbnailUrl}
-            alt={submission.name || "Submission"}
+            src={item.thumbnail_url || "https://placehold.co/400x600?text=No+Image"}
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="mt-3 flex justify-between items-center">
-          <p className="text-lg font-semibold text-white truncate">{submission.name}</p>
-          {submission.country && (
-            <p className="text-lg text-white" title={submission.country}>{countryFlag}</p>
+
+        <div>
+          <h3 className="text-lg font-bold text-white">{item.name}</h3>
+          {item.country && (
+            <p className="text-gray-300 text-sm">{item.country}</p>
           )}
         </div>
-        <p className="text-lg font-bold text-yellow-400 mt-2">الأصوات: {submission.votes || 0}</p>
+
+        <button
+          onClick={onVote}
+          className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg flex items-center justify-center gap-2"
+        >
+          <Play size={16} /> صوّت الآن
+        </button>
+
       </div>
-      
-      {open && <Modal submission={submission} onClose={() => setOpen(false)} />}
-    </>
+    </GlassCard>
   );
 }

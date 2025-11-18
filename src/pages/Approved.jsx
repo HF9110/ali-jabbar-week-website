@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { Link } from 'react-router-dom'; // (جديد)
-import { db } from "../firebase/firebase.js"; // (تصحيح) إضافة .js
-import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
-import { Trash2, AlertCircle, Video, Loader2, Edit, PlusCircle } from 'lucide-react';
+// src/pages/Approved.jsx
+import React, { useEffect, useState } from "react";
+import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+import { db } from "../firebase/firebase.js";
+import { Loader2, Trash2, Edit, PlusCircle, Video, AlertCircle } from "lucide-react";
+import { Link } from "react-router-dom";
+import { arabCountries } from "../utils/countries.js";
 import { motion } from "framer-motion";
-import { arabCountries } from "../utils/countries.js"; // (جديد)
 
-// (جديد) دالة لجلب العلم
 const getFlag = (countryName) => {
-  const country = arabCountries.find(c => c.name === countryName);
-  return country ? country.flag : '🌎';
+  const c = arabCountries.find(x => x.name === countryName);
+  return c ? c.flag : "🌎";
 };
 
 export default function Approved() {
@@ -19,106 +19,61 @@ export default function Approved() {
 
   useEffect(() => {
     const q = collection(db, "submissions");
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const approved = [];
+    const unsubscribe = onSnapshot(q, snapshot => {
+      const arr = [];
       snapshot.forEach(d => {
-        if (d.data().approved) {
-          approved.push({ id: d.id, ...d.data() });
-        }
+        const data = d.data();
+        if (data.approved) arr.push({ id: d.id, ...data });
       });
-      setSubs(approved);
+      setSubs(arr);
       setLoading(false);
-    }, (err) => {
+    }, err => {
       console.error(err);
-      setError("حدث خطأ أثناء جلب المشاركات.");
+      setError("فشل جلب المشاركات.");
       setLoading(false);
     });
-    
     return () => unsubscribe();
   }, []);
 
   const handleDelete = async (id) => {
-    if (window.confirm("هل أنت متأكد أنك تريد حذف هذه المشاركة؟ هذا الإجراء لا يمكن التراجع عنه.")) {
-      try {
-        await deleteDoc(doc(db, "submissions", id));
-      } catch (err) {
-        console.error(err);
-        setError("حدث خطأ أثناء حذف المشاركة.");
-      }
+    if (!window.confirm("هل تريد حذف المشاركة نهائياً؟")) return;
+    try {
+      await deleteDoc(doc(db, "submissions", id));
+    } catch (err) {
+      console.error("Delete failed:", err);
+      setError("فشل حذف المشاركة.");
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center p-10">
-        <Loader2 className="animate-spin text-blue-600" size={40} />
-      </div>
-    );
-  }
+  if (loading) return <div className="flex items-center justify-center p-10"><Loader2 className="animate-spin text-blue-600" size={40} /></div>;
 
   return (
-    <motion.div 
-      className="max-w-6xl mx-auto"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">المشاركات المقبولة</h1>
-        <Link 
-          to="/admin/dashboard/manage"
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow"
-        >
-          <PlusCircle size={20} />
-          إضافة مشاركة جديدة
-        </Link>
+    <motion.div className="max-w-6xl mx-auto space-y-6" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">المشاركات المقبولة</h1>
+        <Link to="/admin/dashboard/manage" className="bg-blue-600 px-4 py-2 rounded text-white flex items-center gap-2"><PlusCircle /> إضافة</Link>
       </div>
 
-      {error && (
-        <div className="flex items-center gap-2 text-red-600 bg-red-100 p-4 rounded-lg mb-4">
-          <AlertCircle /> {error}
-        </div>
-      )}
+      {error && <div className="p-3 bg-red-700/10 text-red-200 rounded">{error}</div>}
 
       {subs.length === 0 ? (
-        <div className="text-center bg-white p-10 rounded-lg shadow border border-gray-200">
-          <p className="text-gray-500">لا توجد مشاركات مقبولة حالياً.</p>
-        </div>
+        <div className="p-8 bg-white/5 rounded text-gray-300">لا توجد مشاركات قبول حالياً.</div>
       ) : (
-        <div className="space-y-4">
-          {subs.map(sub => (
-            <div key={sub.id} className="bg-white p-5 rounded-lg shadow border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900">{sub.name}</h3>
-                {sub.country && (
-                  <p className="text-gray-600 flex items-center gap-2">{getFlag(sub.country)} {sub.country}</p>
-                )}
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {(Array.isArray(sub.links) ? sub.links : [sub.tiktok]).map((link, i) => (
-                    <a 
-                      key={i}
-                      href={link.includes('http') ? link : `https://www.tiktok.com/@${link}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs flex items-center gap-1"
-                    >
-                      <Video size={14} /> رابط {i + 1}
-                    </a>
+        <div className="grid grid-cols-1 gap-4">
+          {subs.map(s => (
+            <div key={s.id} className="bg-white/6 p-4 rounded flex items-center justify-between border border-white/6">
+              <div>
+                <h3 className="text-white font-semibold">{s.name}</h3>
+                {s.country && <p className="text-sm text-gray-300">{getFlag(s.country)} {s.country}</p>}
+                <div className="flex gap-2 mt-2">
+                  {(Array.isArray(s.links) ? s.links : [s.tiktok]).map((l,i)=>(
+                    <a key={i} href={l} target="_blank" rel="noreferrer" className="text-sm bg-white/5 px-3 py-1 rounded flex items-center gap-2"><Video /> رابط {i+1}</a>
                   ))}
                 </div>
               </div>
-              <div className="flex gap-2 flex-shrink-0">
-                <Link 
-                  to={`/admin/dashboard/manage/${sub.id}`}
-                  className="flex items-center gap-1 bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
-                >
-                  <Edit size={18} /> تعديل
-                </Link>
-                <button
-                  onClick={() => handleDelete(sub.id)}
-                  className="flex items-center gap-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-                >
-                  <Trash2 size={18} /> حذف
-                </button>
+              <div className="flex gap-2">
+                <Link to={`/admin/dashboard/manage/${s.id}`} className="bg-yellow-500 px-3 py-2 rounded text-white flex items-center gap-2"><Edit /> تعديل</Link>
+                <button onClick={() => handleDelete(s.id)} className="bg-red-600 px-3 py-2 rounded text-white flex items-center gap-2"><Trash2 /> حذف</button>
               </div>
             </div>
           ))}
