@@ -1,18 +1,20 @@
+```javascript:Settings Page:src/pages/Settings.jsx
 import { useEffect, useState } from "react";
 import { db } from "../firebase/firebase.js"; 
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { AlertCircle, Save, CheckCircle, Palette, Radio, Edit3, Loader2, Settings as SettingsIcon, Type, Image, Codesandbox } from 'lucide-react';
+import { AlertCircle, Save, CheckCircle, Palette, Radio, Edit3, Loader2, Settings as SettingsIcon, Type, Codesandbox } from 'lucide-react';
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
 // قائمة خطوط آمنة شائعة
-const safeFonts = ['Cairo', 'Arial', 'Tahoma', 'Times New Roman'];
+const safeFonts = ['Cairo', 'Arial', 'Tahoma', 'Times New Roman', 'Inter'];
 
 const Toggle = ({ label, enabled, onChange }) => (
   <label className="flex items-center justify-between cursor-pointer p-4 glass-card rounded-lg border border-white/10">
     <span className="text-sm font-medium text-gray-300">{label}</span>
     <div className="relative">
       <input type="checkbox" className="sr-only" checked={enabled} onChange={onChange} />
+      {/* استخدام متغيرات CSS لتطبيق اللون الأساسي */}
       <div className={`block w-14 h-8 rounded-full ${enabled ? 'bg-[var(--color-primary)] shadow-lg' : 'bg-gray-700'}`}></div>
       <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${enabled ? 'translate-x-6' : ''}`}></div>
     </div>
@@ -27,8 +29,8 @@ export default function Settings() {
     enableCountry: true,
     maxLinks: 1,
     // --- حقول التحكم بالثيمات الجديدة ---
-    mainColor: "#d4af37", // الذهبي
-    highlightColor: "#fde047", // الذهبي الفاتح للتوهج
+    mainColor: "#d4af37", // اللون الأساسي (الذهبي)
+    highlightColor: "#fde047", // لون التوهج (الذهبي الفاتح)
     appFont: "Cairo",
     enableGlass: true,
   });
@@ -73,6 +75,7 @@ export default function Settings() {
       const mainDocRef = doc(db, "contest_settings", "main");
       const footerDocRef = doc(db, "contest_settings", "footer");
       
+      // حفظ الإعدادات الديناميكية
       await Promise.all([
         setDoc(mainDocRef, { ...settings, maxLinks: Number(settings.maxLinks) }, { merge: true }),
         setDoc(footerDocRef, footerContent, { merge: true })
@@ -141,7 +144,7 @@ export default function Settings() {
               value={settings.title}
               onChange={handleInputChange}
               placeholder="عنوان المسابقة"
-              className="w-full p-3 border rounded border-gray-700 bg-gray-800 text-white focus:ring-[#d4af37] focus:border-[#d4af37]"
+              className="w-full p-3 border rounded border-gray-700 bg-gray-800 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
             />
             <div className="flex items-center gap-2">
                 <input
@@ -149,16 +152,16 @@ export default function Settings() {
                   value={settings.logo}
                   onChange={handleInputChange}
                   placeholder="رابط الشعار (Logo URL)"
-                  className="flex-grow p-3 border rounded border-gray-700 bg-gray-800 text-white focus:ring-[#d4af37] focus:border-[#d4af37]"
+                  className="flex-grow p-3 border rounded border-gray-700 bg-gray-800 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
                 />
                 {settings.logo && <img src={settings.logo} alt="Logo Preview" className="h-10 w-10 object-contain" />}
             </div>
           </div>
           
-          {/* 2. اللون الأساسي */}
+          {/* 2. اللون الأساسي (Primary Color) */}
           <div className="flex items-center gap-3 glass-card p-3 rounded-lg border border-white/20">
             <Codesandbox size={18} className="text-gray-400" />
-            <label className="text-sm text-gray-300">اللون الأساسي</label>
+            <label className="text-sm text-gray-300">اللون الأساسي (Hex)</label>
             <input
               type="color"
               name="mainColor"
@@ -168,10 +171,10 @@ export default function Settings() {
             />
           </div>
 
-          {/* 3. اللون الاحتياطي/التوهج */}
+          {/* 3. لون التوهج (Highlight Color) */}
           <div className="flex items-center gap-3 glass-card p-3 rounded-lg border border-white/20">
             <Codesandbox size={18} className="text-gray-400" />
-            <label className="text-sm text-gray-300">لون التوهج</label>
+            <label className="text-sm text-gray-300">لون التوهج (Hex)</label>
             <input
               type="color"
               name="highlightColor"
@@ -191,7 +194,7 @@ export default function Settings() {
                 name="appFont"
                 value={settings.appFont}
                 onChange={handleInputChange}
-                className="w-full p-3 border rounded border-gray-700 bg-gray-800 text-white focus:ring-[#d4af37] focus:border-[#d4af37]"
+                className="w-full p-3 border rounded border-gray-700 bg-gray-800 text-white focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
             >
                 {safeFonts.map(font => <option key={font} value={font}>{font} (مثال)</option>)}
             </select>
@@ -213,7 +216,6 @@ export default function Settings() {
 
       {/* إعدادات حالة المسابقة */}
       <div className="glass-card p-6 md:p-8 rounded-xl shadow-xl border border-white/10">
-        {/* ... (بقية الحقول الحالية مثل Stage, MaxLinks, Footer Content) ... */}
         <h2 className="text-xl font-semibold text-white mb-6 border-b border-gray-700 pb-4 flex items-center gap-2">
           <Radio size={20} className="text-[#d4af37]" />
           حالة المسابقة (الحملة)
@@ -261,7 +263,7 @@ export default function Settings() {
                 name="maxLinks"
                 value={settings.maxLinks}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-700 rounded-lg shadow-sm focus:ring-[#d4af37] focus:border-[#d4af37] bg-gray-800 text-white"
+                className="w-full p-3 border border-gray-700 rounded-lg shadow-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-gray-800 text-white"
                 >
                 <option value={1}>1</option>
                 <option value={2}>2</option>
@@ -278,7 +280,7 @@ export default function Settings() {
                 rows="4"
                 value={footerContent[key]}
                 onChange={(e) => setFooterContent(prev => ({ ...prev, [key]: e.target.value }))}
-                className="w-full p-3 border border-gray-700 rounded-lg shadow-sm focus:ring-[#d4af37] focus:border-[#d4af37] bg-gray-800 text-white"
+                className="w-full p-3 border border-gray-700 rounded-lg shadow-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-gray-800 text-white"
               />
             </div>
             ))}
@@ -289,6 +291,7 @@ export default function Settings() {
       <button
         onClick={handleSave}
         className="flex items-center justify-center gap-2 w-full md:w-auto btn-vote px-6 py-3 rounded-lg shadow-lg"
+        style={{ backgroundColor: settings.mainColor, color: settings.mainColor ? 'black' : 'white' }} 
       >
         <Save size={18} />
         حفظ جميع الإعدادات
@@ -296,126 +299,3 @@ export default function Settings() {
     </motion.div>
   );
 }
-```eof
-
-### 2. التعديلات الأساسية لـ App.jsx (لتطبيق الثيم)
-
-هذا التعديل هو الأهم؛ حيث يقرأ الإعدادات الديناميكية ويطبقها على كامل التطبيق عبر متغيرات CSS (CSS Variables).
-
-
-```javascript:App Router Setup:src/App.jsx
-// src/App.jsx
-import React, { lazy, Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { Award, HelpCircle, Users } from 'lucide-react';
-import useSettings from "./hooks/useSettings"; // <-- استيراد الهوك
-
-// Lazy-loaded pages (based on your folder structure)
-const Home = lazy(() => import("./pages/Home"));
-const FAQ = lazy(() => import("./pages/FAQ"));
-const Winners = lazy(() => import("./pages/Winners"));
-const SubmissionProfile = lazy(() =>
-  import("./pages/SubmissionProfile")
-);
-
-// Admin & Dashboard pages
-const AdminLogin = lazy(() => import("./pages/AdminLogin"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Settings = lazy(() => import("./pages/Settings"));
-
-// Submissions Management
-const Manage = lazy(() => import("./pages/Manage"));
-const ManageSubmissions = lazy(() =>
-  import("./pages/ManageSubmissions")
-);
-const Pending = lazy(() => import("./pages/Pending"));
-const Approved = lazy(() => import("./pages/Approved"));
-
-// Logs
-const AdminLogs = lazy(() => import("./pages/AdminLogs"));
-const Logs = lazy(() => import("./pages/Logs"));
-
-// مكون شريط التنقل العلوي - موحد التصميم
-const Header = () => (
-    <header className="sticky top-0 z-40 w-full bg-black/60 backdrop-blur-md shadow-xl border-b border-gray-700/50">
-        <nav className="max-w-6xl mx-auto flex items-center justify-between p-4" dir="rtl">
-            
-            {/* الشعار */}
-            <Link to="/" className="text-2xl font-extrabold text-[var(--color-primary)]">
-                تصويت المسابقة
-            </Link>
-
-            <div className="flex items-center space-x-6 space-x-reverse text-sm font-semibold">
-                <Link to="/" className="text-gray-300 hover:text-[var(--color-highlight)] transition-colors flex items-center gap-2">
-                   <Users size={18} /> المشاركات
-                </Link>
-                <Link to="/winners" className="text-gray-300 hover:text-[var(--color-highlight)] transition-colors flex items-center gap-2">
-                    <Award size={18} /> الفائزون
-                </Link>
-                <Link to="/faq" className="text-gray-300 hover:text-[var(--color-highlight)] transition-colors flex items-center gap-2">
-                    <HelpCircle size={18} /> الأسئلة الشائعة
-                </Link>
-                <Link to="/admin/login" className="text-gray-500 hover:text-gray-300 transition-colors text-xs">
-                    (إدارة)
-                </Link>
-            </div>
-        </nav>
-    </header>
-);
-
-export default function App() {
-    const settings = useSettings(); // جلب الإعدادات
-
-    // بناء متغيرات CSS ديناميكياً
-    const dynamicStyle = {
-        '--color-primary': settings.mainColor || '#d4af37',
-        '--color-highlight': settings.highlightColor || '#fde047',
-        '--font-family': settings.appFont || 'Cairo, sans-serif',
-        // كلاس الـ glass-card يستخدم متغيرات Tailwind (hardcoded)
-    };
-
-    return (
-        <Router>
-            {/* تطبيق المتغيرات على مستوى جذر التطبيق */}
-            <div style={dynamicStyle}> 
-                <Routes>
-                    <Route path="/admin/*" element={<Suspense fallback={<div className="text-white p-10">جاري التحميل...</div>}><AdminRoutes /></Suspense>} />
-                    <Route path="/*" element={<PublicRoutes />} />
-                </Routes>
-            </div>
-        </Router>
-    );
-}
-
-// المسارات العامة (تشمل الهيدر)
-const PublicRoutes = () => (
-    <Suspense fallback={<div className="text-white p-10 text-center">جاري التحميل...</div>}>
-        <Header />
-        <main className="min-h-screen pt-4 pb-16">
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/winners" element={<Winners />} />
-                <Route path="/submission/:id" element={<SubmissionProfile />} />
-            </Routes>
-        </main>
-    </Suspense>
-);
-
-// مسارات الإدارة
-const AdminRoutes = () => (
-    <Routes>
-        <Route path="/login" element={<AdminLogin />} />
-        <Route path="/" element={<AdminDashboard />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/manage" element={<Manage />} />
-        <Route path="/manage/submissions" element={<ManageSubmissions />} />
-        <Route path="/pending" element={<Pending />} />
-        <Route path="/approved" element={<Approved />} />
-        <Route path="/logs" element={<Logs />} />
-        <Route path="/admin/logs" element={<AdminLogs />} />
-    </Routes>
-);
-```
