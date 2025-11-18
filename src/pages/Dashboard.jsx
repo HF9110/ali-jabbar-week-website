@@ -2,13 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import {
-  Users,
-  CheckCircle,
-  Clock,
-  TrendingUp,
-  LayoutDashboard,
-} from "lucide-react";
+import { CheckCircle, Clock, TrendingUp, LayoutDashboard } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Dashboard() {
@@ -45,7 +39,7 @@ export default function Dashboard() {
       className="max-w-5xl mx-auto p-6 text-white"
     >
       <h1 className="text-3xl font-bold mb-8 flex items-center gap-3">
-        <LayoutDashboard size={28} className="text-[#fde047]" />
+        <LayoutDashboard size={28} className="text-[var(--color-highlight)]" />
         الإحصائيات العامة
       </h1>
 
