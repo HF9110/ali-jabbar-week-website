@@ -2,16 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* تعريف اللون الذهبي الأساسي */
+:root {
+  --color-primary-gold: #d4af37;
+  --color-secondary-dark: #3b3b3b;
+}
+
 body {
-  font-family: 'Cairo', sans-serif;
+  /* الخلفية الداكنة المتدرجة */
+  background: linear-gradient(135deg, #242424, #121212);
+  font-family: "Cairo", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* (جديد) كلاس مساعد للتصميم الزجاجي */
+/* (معدل) كلاس مساعد للتصميم الزجاجي الأنيق */
 .glass-card {
-  /* زيادة الضبابية */
-  background-color: rgba(255, 255, 255, 0.08); 
-  -webkit-backdrop-filter: blur(40px);
-  backdrop-filter: blur(40px);
+  /* زيادة الشفافية والـ blur لتناسب الخلفية الداكنة */
+  background-color: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* تعديل زر التصويت ليكون ذهبياً */
+.btn-vote {
+  @apply bg-[#d4af37] text-gray-900 font-bold py-2 px-6 rounded-full transition-all duration-300 shadow-md hover:bg-yellow-400 hover:shadow-lg;
+}
+
+/* تأثير الـ glow للمراكز الأولى (تم تعريفه في tailwind.config.js) */
+.animate-golden-glow {
+  animation: glow 2.5s ease-in-out infinite;
+  border-color: #fde047 !important;
+  color: #fde047 !important;
 }

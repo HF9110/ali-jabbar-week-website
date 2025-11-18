@@ -2,7 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { Users, CheckCircle, Clock, TrendingUp } from "lucide-react";
+import {
+  Users,
+  CheckCircle,
+  Clock,
+  TrendingUp,
+  LayoutDashboard,
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Dashboard() {
   const [pending, setPending] = useState(0);
@@ -10,12 +17,12 @@ export default function Dashboard() {
   const [votes, setVotes] = useState(0);
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "submissions"), snap => {
+    const unsub = onSnapshot(collection(db, "submissions"), (snap) => {
       let _pending = 0,
-          _approved = 0,
-          _votes = 0;
+        _approved = 0,
+        _votes = 0;
 
-      snap.forEach(doc => {
+      snap.forEach((doc) => {
         const d = doc.data();
         if (d.approved) _approved++;
         else _pending++;
@@ -32,39 +39,44 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">الإحصائيات العامة</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-5xl mx-auto p-6 text-white"
+    >
+      <h1 className="text-3xl font-bold mb-8 flex items-center gap-3">
+        <LayoutDashboard size={28} className="text-[#fde047]" />
+        الإحصائيات العامة
+      </h1>
 
-      <div className="grid md:grid-cols-3 gap-6">
-
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
         {/* Pending */}
-        <div className="p-6 bg-white rounded-xl border shadow-sm flex items-center gap-4">
-          <Clock className="text-yellow-500" size={36} />
+        <div className="p-6 glass-card rounded-xl border border-white/10 shadow-xl flex items-center gap-4">
+          <Clock className="text-yellow-400" size={36} />
           <div>
-            <p className="text-gray-500 text-sm">مشاركات معلقة</p>
-            <h2 className="text-2xl font-bold">{pending}</h2>
+            <p className="text-gray-400 text-sm">مشاركات معلقة</p>
+            <h2 className="text-3xl font-bold text-white">{pending}</h2>
           </div>
         </div>
 
         {/* Approved */}
-        <div className="p-6 bg-white rounded-xl border shadow-sm flex items-center gap-4">
-          <CheckCircle className="text-green-600" size={36} />
+        <div className="p-6 glass-card rounded-xl border border-white/10 shadow-xl flex items-center gap-4">
+          <CheckCircle className="text-green-400" size={36} />
           <div>
-            <p className="text-gray-500 text-sm">مشاركات مقبولة</p>
-            <h2 className="text-2xl font-bold">{approved}</h2>
+            <p className="text-gray-400 text-sm">مشاركات مقبولة</p>
+            <h2 className="text-3xl font-bold text-white">{approved}</h2>
           </div>
         </div>
 
         {/* Votes */}
-        <div className="p-6 bg-white rounded-xl border shadow-sm flex items-center gap-4">
-          <TrendingUp className="text-blue-600" size={36} />
+        <div className="p-6 glass-card rounded-xl border border-white/10 shadow-xl flex items-center gap-4">
+          <TrendingUp className="text-blue-400" size={36} />
           <div>
-            <p className="text-gray-500 text-sm">إجمالي الأصوات</p>
-            <h2 className="text-2xl font-bold">{votes}</h2>
+            <p className="text-gray-400 text-sm">إجمالي الأصوات</p>
+            <h2 className="text-3xl font-bold text-white">{votes}</h2>
           </div>
         </div>
-
       </div>
-    </div>
+    </motion.div>
   );
 }

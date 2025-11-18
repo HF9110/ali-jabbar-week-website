@@ -1,8 +1,10 @@
-// src/pages/SubmissionProfile.jsx
+/ src/pages/SubmissionProfile.jsx
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import useSubmissions from "../hooks/useSubmissions";
 import ConfirmVoteModal from "../components/ConfirmVoteModal";
+import { Link as LinkIcon, Heart } from 'lucide-react';
+import { motion } from "framer-motion";
 
 export default function SubmissionProfile() {
   const { id } = useParams();
@@ -16,47 +18,62 @@ export default function SubmissionProfile() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-
+    <motion.div 
+        className="max-w-4xl mx-auto p-6"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+    >
+      
       {/* Thumb */}
-      <div className="rounded-xl overflow-hidden shadow-xl mb-4">
+      <div className="rounded-xl overflow-hidden shadow-2xl glass-card mb-6 border border-white/20">
         <img
           src={data.thumbnail_url}
           alt={data.name}
-          className="w-full h-80 object-cover"
+          className="w-full h-96 object-cover"
+          onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/800x400/121212/AAAAAA?text=Video+Thumb"; }}
         />
       </div>
+      
+      <div className="bg-black/30 p-6 rounded-xl shadow-xl glass-card border border-white/10">
+          <h1 className="text-4xl font-bold text-[#fde047] mb-1">{data.name}</h1>
+          <p className="text-gray-300 mb-4">{data.country}</p>
 
-      <h1 className="text-3xl font-bold text-white mb-2">{data.name}</h1>
-      <p className="text-gray-300 mb-2">{data.country}</p>
+          <div className="flex items-center justify-between pb-4 border-b border-gray-700">
+            <p className="text-gray-400 font-semibold flex items-center gap-2">
+                <Heart size={20} className="text-red-400" />
+                الأصوات: <span className="text-white font-bold">{data.votes}</span>
+            </p>
 
-      <p className="text-gray-400 mb-4">الأصوات: {data.votes}</p>
+            <button
+                onClick={() => setOpen(true)}
+                className="btn-vote flex items-center gap-2"
+            >
+                صوّت الآن
+            </button>
+          </div>
 
-      <button
-        onClick={() => setOpen(true)}
-        className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
-      >
-        صوّت الآن
-      </button>
+          <h2 className="text-xl font-bold mt-6 text-white flex items-center gap-2">
+            <LinkIcon size={20} className="text-[#d4af37]" />
+            روابط الفيديو
+          </h2>
 
-      <h2 className="text-xl font-bold mt-6 text-white">روابط الفيديو</h2>
+          <ul className="mt-3 text-gray-300 space-y-2">
+            {(data.links || []).map((l, i) => (
+              <li key={i}>
+                <a href={l} target="_blank" className="underline hover:text-[#fde047] transition-colors">
+                  رابط رقم {i + 1}
+                </a>
+              </li>
+            ))}
+          </ul>
 
-      <ul className="mt-3 text-blue-300">
-        {(data.links || []).map((l, i) => (
-          <li key={i}>
-            <a href={l} target="_blank" className="underline">
-              رابط رقم {i + 1}
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      <ConfirmVoteModal
-        open={open}
-        onClose={() => setOpen(false)}
-        userId={data.id}
-        userName={data.name}
-      />
-    </div>
+          <ConfirmVoteModal
+            open={open}
+            onClose={() => setOpen(false)}
+            userId={data.id}
+            userName={data.name}
+          />
+      </div>
+    </motion.div>
   );
 }
